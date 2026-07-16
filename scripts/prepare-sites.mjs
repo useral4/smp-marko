@@ -1,9 +1,9 @@
-import { cpSync, existsSync, mkdirSync, rmSync } from "node:fs";
+import { cpSync, existsSync, mkdirSync } from "node:fs";
 
-if (!existsSync("out")) {
-  throw new Error("Next.js export directory was not created");
+if (!existsSync("dist/server/index.mjs")) {
+  throw new Error("Vinext server entrypoint was not created");
 }
 
-rmSync("dist", { recursive: true, force: true });
-mkdirSync("dist", { recursive: true });
-cpSync("out", "dist", { recursive: true });
+cpSync("dist/server/index.mjs", "dist/server/index.js");
+mkdirSync("dist/.openai", { recursive: true });
+cpSync(".openai/hosting.json", "dist/.openai/hosting.json");
