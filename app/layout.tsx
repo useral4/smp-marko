@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import SiteShell from "./components/SiteShell";
 
 export const metadata: Metadata = {
   title: "СМП МАРКО — монолитные перекрытия в Москве",
@@ -15,7 +16,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="ru">
-      <body>{children}</body>
+      <body><SiteShell>{children}</SiteShell></body>
     </html>
   );
 }
