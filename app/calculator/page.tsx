@@ -1,0 +1,8 @@
+import type { Metadata } from "next";
+import Link from "next/link";
+import Calculator from "../components/Calculator";
+import { ProjectForm } from "../components/SiteShell";
+
+export const metadata:Metadata={title:"Калькулятор перекрытий МАРКО",description:"Предварительный расчёт стоимости материалов для сборно-монолитного перекрытия МАРКО."};
+
+export default function CalculatorPage(){return <main id="top"><section className="page-hero"><div className="container"><div className="breadcrumbs"><Link href="/">Главная</Link><span>—</span>Калькулятор</div><div className="page-hero-grid"><h1>Калькулятор перекрытия МАРКО</h1><p>Получите предварительный ориентир по стоимости базового комплекта материалов. Точный расчёт выполняет инженер по плану объекта.</p></div></div></section><section className="section calculator-section"><div className="container"><Calculator/></div></section><section className="section project-brief calculator-lead"><div className="container contact-wrap"><div className="contact-copy"><div className="section-index light">Следующий шаг</div><h2>Получите точную спецификацию</h2><p>Отправьте план — инженер проверит пролёты и нагрузки, подберёт тип перекрытия и рассчитает монтаж с доставкой.</p><div className="brief-benefits"><div><span><b>Предварительная оценка</b><small>в течение одного часа</small></span></div><div><span><b>Подробный расчёт</b><small>до одного рабочего дня</small></span></div><div><span><b>Форматы</b><small>PDF, DWG, фото или эскиз</small></span></div></div></div><div className="contact-form"><h3>Отправить исходные данные</h3><ProjectForm/></div></div></section></main>}
