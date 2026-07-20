@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { FormEvent, useEffect, useState } from "react";
+import { createContext, FormEvent, useContext, useEffect, useState } from "react";
 import { contactAddress, contactEmail, phoneDisplay, phoneHref, phones, socials } from "../data";
 
 export function UiIcon({ name, size = 20 }: { name: string; size?: number }) {
@@ -30,8 +30,11 @@ function Logo() {
   return <Link className="logo logo-image-link" href="/" aria-label="СМП МАРКО — на главную"><Image src="/marko-logo.jpg" alt="МАРКО" width={256} height={80} priority className="header-logo-image"/></Link>;
 }
 
+const LeadContext = createContext<(() => void) | null>(null);
+
 export function LeadButton({ children = "Расчёт за 1 день", className = "button" }: { children?: React.ReactNode; className?: string }) {
-  return <button className={className} onClick={() => window.dispatchEvent(new Event("open-lead"))}>{children}</button>;
+  const openLead = useContext(LeadContext);
+  return <button className={className} type="button" onClick={() => openLead?.()}>{children}</button>;
 }
 
 export function SocialLinks({ labels = false }: { labels?: boolean }) {
@@ -66,9 +69,9 @@ export function ProjectForm({ className = "" }: { className?: string }) {
       <label><span>Тип объекта</span><select name="objectType" required defaultValue=""><option value="" disabled>Выберите вариант</option><option>Частный дом</option><option>Многоквартирный дом</option><option>Коммерческий объект</option><option>Производственный объект</option><option>Реконструкция / капремонт</option><option>Другое</option></select></label>
     </div>
     <label><span>Комментарий</span><textarea name="comment" rows={3} placeholder="Площадь, пролёты, материал стен и что требуется рассчитать"/></label>
-    <label className="file-field"><span><UiIcon name="upload"/> План или эскиз</span><input name="projectFile" type="file" accept=".pdf,.dwg,.jpg,.jpeg,.png"/><small>PDF, DWG, JPG или PNG. Файл приложите к подготовленному письму либо отправьте в мессенджер.</small></label>
+    <label className="file-field"><span><UiIcon name="upload"/> План или эскиз</span><input name="projectFile" type="file" accept=".pdf,.dwg,.jpg,.jpeg,.png"/><small>PDF, DWG, JPG или PNG. После нажатия кнопки откроется почтовая программа — приложите выбранный файл к готовому письму.</small></label>
     <label className="checkbox"><input type="checkbox" required/><i><UiIcon name="check" size={14}/></i><span>Согласен на обработку персональных данных по <Link href="/privacy">политике конфиденциальности</Link></span></label>
-    <button className="button form-submit" type="submit">Отправить план и получить расчёт <UiIcon name="arrow"/></button>
+    <button className="button form-submit" type="submit">Подготовить письмо с заявкой <UiIcon name="arrow"/></button>
     {prepared && <p className="form-status">Заявка подготовлена в почтовом приложении. Не забудьте приложить выбранный файл.</p>}
   </form>;
 }
@@ -87,18 +90,13 @@ export default function SiteShell({ children }: { children: React.ReactNode }) {
   const [lead, setLead] = useState(false);
   const [cookie, setCookie] = useState(false);
 
-  useEffect(() => {
-    const open = () => setLead(true);
-    window.addEventListener("open-lead", open);
-    setCookie(localStorage.getItem("marko-cookie") !== "accepted");
-    return () => window.removeEventListener("open-lead", open);
-  }, []);
+  useEffect(() => { setCookie(localStorage.getItem("marko-cookie") !== "accepted"); }, []);
 
   useEffect(() => { document.body.style.overflow = menu || lead ? "hidden" : ""; }, [menu, lead]);
 
   const links = [["Услуги","/services"],["Объекты","/objects"],["Реконструкция","/reconstruction"],["Технология","/technology"],["Статьи","/articles"],["Новости","/news"],["Калькулятор","/calculator"],["Контакты","/contacts"]];
 
-  return <>
+  return <LeadContext.Provider value={() => setLead(true)}><>
     <header className="header"><div className="container header-inner"><Logo/><nav className="desktop-nav">{links.map(([title,href])=><Link key={href} href={href}>{title}</Link>)}</nav><div className="header-actions"><a className="header-phone" href={phoneHref}><UiIcon name="phone" size={17}/><span>{phoneDisplay}</span></a><LeadButton className="button button-small"/><button className="burger" onClick={()=>setMenu(true)} aria-label="Открыть меню"><UiIcon name="menu" size={24}/></button></div></div></header>
     <div className={`mobile-menu ${menu ? "is-open" : ""}`}><div className="mobile-menu-head"><Logo/><button onClick={()=>setMenu(false)} aria-label="Закрыть меню"><UiIcon name="close"/></button></div><nav>{links.map(([title,href],index)=><Link onClick={()=>setMenu(false)} key={href} href={href}>{title}<span>{String(index + 1).padStart(2,"0")}</span></Link>)}</nav><div className="mobile-menu-bottom"><div className="mobile-phones">{phones.map((phone)=><a key={phone.href} href={phone.href}>{phone.display}</a>)}</div><LeadButton>Отправить план</LeadButton></div></div>
     {children}
@@ -106,5 +104,5 @@ export default function SiteShell({ children }: { children: React.ReactNode }) {
     <MessengerDock/>
     {cookie&&<div className="cookie"><div><b>Мы используем cookie</b><p>Они помогают сайту работать корректно.</p></div><button onClick={()=>{localStorage.setItem("marko-cookie","accepted");setCookie(false)}}>Хорошо</button><button className="cookie-close" onClick={()=>setCookie(false)} aria-label="Закрыть"><UiIcon name="close" size={18}/></button></div>}
     {lead&&<div className="modal-backdrop" onMouseDown={(event)=>{if(event.target===event.currentTarget)setLead(false)}}><div className="modal lead-modal"><button className="modal-close" onClick={()=>setLead(false)} aria-label="Закрыть"><UiIcon name="close"/></button><div className="eyebrow"><span/>Расчёт за 1 рабочий день</div><h2>Отправьте план перекрытия</h2><p>Принимаем PDF, DWG, фото плана или эскиз. Инженер подберёт систему и подготовит предварительный расчёт.</p><ProjectForm className="modal-project-form"/></div></div>}
-  </>;
+  </></LeadContext.Provider>;
 }

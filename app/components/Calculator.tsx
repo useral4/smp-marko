@@ -18,6 +18,6 @@ export default function Calculator() {
       <label><span>Тип перекрытия</span><select value={productIndex} onChange={(event)=>setProductIndex(Number(event.target.value))}>{products.map((item,index)=><option value={index} key={item.name}>{item.name}</option>)}</select></label>
       <div className="calculator-specs"><div><small>Толщина</small><b>{product.thickness}</b></div><div><small>Максимальный пролёт</small><b>{product.span}</b></div><div><small>Нагрузка</small><b>{product.capacity}</b></div><div><small>Собственный вес</small><b>{product.weight}</b></div></div>
     </div>
-    <aside className="calculator-result"><span>Предварительная стоимость материалов</span><strong>{money.format(estimate)}</strong><p>Расчёт выполнен по базовой цене {product.price}. Доставка, монтаж, арматура, бетон и окончательная комплектация зависят от проекта и региона.</p><LeadButton>Получить точный расчёт <UiIcon name="arrow"/></LeadButton></aside>
+    <aside className="calculator-result"><span>Ориентир по базовой цене из таблицы</span><strong>{money.format(estimate)}</strong><p>Формула: площадь × базовая цена {product.price}. Ставки перенесены из предоставленной заказчиком сравнительной таблицы от 20.07.2026. Это не инженерный расчёт и не смета: доставка, монтаж, арматура, бетон и комплектация рассчитываются по проекту.</p><small className="calculator-source">Для точной цены отправьте план или эскиз.</small><LeadButton>Получить точный расчёт <UiIcon name="arrow"/></LeadButton></aside>
   </div>;
 }
