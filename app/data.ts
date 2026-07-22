@@ -11,7 +11,7 @@ export const contactAddress = "197720, г. Санкт-Петербург, Нев
 export const socials = [
   { name: "Telegram", href: "https://t.me/smpmarkospb", icon: "telegram" },
   { name: "WhatsApp", href: "https://wa.me/79213041361", icon: "whatsapp" },
-  { name: "MAX", href: "https://max.ru/u/f9LHodD0cOIjLwJR6atfu40wiJN8axb16_-nTKxZKFqodOU3VrRFffIzFcI", icon: "max" },
+  { name: "MAX", href: "https://max.ru/channel_smpmarko", icon: "max" },
   { name: "ВКонтакте", href: "https://vk.ru/smpmarko", icon: "vk" },
   { name: "RUTUBE", href: "https://rutube.ru/channel/43546826/", icon: "rutube" },
 ];

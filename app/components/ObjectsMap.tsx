@@ -108,7 +108,7 @@ export default function ObjectsMap({ compact = false }: { compact?: boolean }) {
 
   return <div className="yandex-objects-map">
     <div className="yandex-map-canvas" ref={node}/>
-    {!loaded && !failed && <div className="map-status">Загружаем карту и 27 меток…</div>}
+    {!loaded && !failed && <div className="map-status">Загружаем карту объектов…</div>}
     {failed && <div className="map-status">Не удалось загрузить Яндекс Карты. Проверьте подключение к интернету.</div>}
   </div>;
 }
