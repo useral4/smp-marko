@@ -610,8 +610,8 @@ export default function AdminPanel() {
       });
       setSelected({ ...selected, slug: result.slug });
       setPreviousSlug(result.slug);
-      setNotice("Сохранено. Изменения появятся на сайте после автоматического обновления.");
       await load(section);
+      setNotice("Сохранено. Изменения появятся на сайте после автоматического обновления.");
     } catch (nextError) {
       setError(nextError instanceof Error ? nextError.message : "Не удалось сохранить");
     } finally {
