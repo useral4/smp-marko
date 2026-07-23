@@ -57,6 +57,7 @@ const socialLink = fields.object(
 );
 
 export default config({
+  locale: "ru-RU",
   storage: useGitHub
     ? {
         kind: "github",
