@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { createContext, FormEvent, useContext, useEffect, useState } from "react";
 import { contactAddress, contactEmail, phoneDisplay, phoneHref, phones, socials } from "../generated-content";
 
@@ -86,6 +87,7 @@ function MessengerDock() {
 }
 
 export default function SiteShell({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname();
   const [menu, setMenu] = useState(false);
   const [lead, setLead] = useState(false);
   const [cookie, setCookie] = useState(false);
@@ -93,6 +95,8 @@ export default function SiteShell({ children }: { children: React.ReactNode }) {
   useEffect(() => { setCookie(localStorage.getItem("marko-cookie") !== "accepted"); }, []);
 
   useEffect(() => { document.body.style.overflow = menu || lead ? "hidden" : ""; }, [menu, lead]);
+
+  if (pathname.startsWith("/admin")) return <>{children}</>;
 
   const links = [["Услуги","/services"],["Объекты","/objects"],["Реконструкция","/reconstruction"],["Технология","/technology"],["Статьи","/articles"],["Новости","/news"],["Контакты","/contacts"]];
 

@@ -9,7 +9,10 @@ export const isGitHubStorageEnabled =
       process.env.NEXT_PUBLIC_KEYSTATIC_GITHUB_APP_SLUG,
   );
 const useGitHub = isGitHubStorageEnabled;
-const contentRoot = useGitHub ? "cms/content" : "content";
+const isRootApplication =
+  process.env.KEYSTATIC_ROOT_APP === "true" || !/[\\/]cms$/.test(process.cwd());
+const contentRoot =
+  useGitHub || isRootApplication ? "cms/content" : "content";
 const imageDirectory = "public/uploads";
 
 const text = (label: string, description?: string) =>
