@@ -23,6 +23,23 @@ const translations: Record<string, string> = {
   "Unable to load collection": "Не удалось загрузить список",
   "Unable to load singleton": "Не удалось загрузить раздел",
   "No items found": "Ничего не найдено",
+  "Keystatic Setup": "Настройка админки",
+  "Keystatic doesn't have the required config.":
+    "Для админки ещё не настроено подключение к GitHub.",
+  "If you've already created your GitHub app, make sure to add the following environment variables:":
+    "Если приложение GitHub уже создано, добавьте следующие переменные окружения:",
+  "If you haven't created your GitHub app for Keystatic, you can create one below.":
+    "Если приложение ещё не создано, создайте его с помощью формы ниже.",
+  "Deployed App URL": "Адрес сайта на Render",
+  "This should the root of your domain. If you're not sure where Keystatic will be deployed, leave this blank and you can update the GitHub app later.":
+    "Укажите основной адрес сайта. Его можно изменить позднее в настройках приложения GitHub.",
+  "GitHub organization (if any)": "Организация GitHub (если есть)",
+  "You must be an owner or GitHub App manager in the organization to create the GitHub App. Leave this blank to create the app in your personal account.":
+    "Оставьте поле пустым, чтобы создать приложение в личном аккаунте GitHub.",
+  "After visiting GitHub to create the GitHub app, you'll be redirected back here and secrets generated from GitHub will be written to your":
+    "После создания приложения GitHub вы вернётесь сюда, а полученные ключи будут записаны в",
+  "Create GitHub App": "Создать приложение GitHub",
+  "Log in with GitHub": "Войти через GitHub",
   Slug: "Адрес страницы",
   true: "Да",
   false: "Нет",

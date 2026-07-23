@@ -96,7 +96,9 @@ export default function SiteShell({ children }: { children: React.ReactNode }) {
 
   useEffect(() => { document.body.style.overflow = menu || lead ? "hidden" : ""; }, [menu, lead]);
 
-  if (pathname.startsWith("/admin")) return <>{children}</>;
+  if (pathname.startsWith("/admin") || pathname.startsWith("/keystatic")) {
+    return <>{children}</>;
+  }
 
   const links = [["Услуги","/services"],["Объекты","/objects"],["Реконструкция","/reconstruction"],["Технология","/technology"],["Статьи","/articles"],["Новости","/news"],["Контакты","/contacts"]];
 

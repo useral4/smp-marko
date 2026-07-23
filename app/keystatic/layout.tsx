@@ -1,16 +1,20 @@
 import type { Metadata } from "next";
 import KeystaticApp from "./keystatic";
 import RussianInterface from "../../cms/app/keystatic/russian-interface";
-import SetupRequired from "./setup-required";
-import { isGitHubStorageEnabled } from "../../keystatic.config";
+import SetupRequired from "../../cms/app/keystatic/setup-required";
+import { isGitHubSetupEnabled, isGitHubStorageEnabled } from "../../keystatic.config";
 
 export const metadata: Metadata = {
   title: "Управление сайтом — СМП МАРКО",
   robots: { index: false, follow: false },
 };
 
-export default function AdminLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  if (process.env.KEYSTATIC_STORAGE === "github" && !isGitHubStorageEnabled) {
+export default function KeystaticLayout() {
+  if (
+    process.env.KEYSTATIC_STORAGE === "github" &&
+    !isGitHubStorageEnabled &&
+    !isGitHubSetupEnabled
+  ) {
     return <SetupRequired />;
   }
 
@@ -18,7 +22,6 @@ export default function AdminLayout({ children }: Readonly<{ children: React.Rea
     <>
       <KeystaticApp />
       <RussianInterface />
-      {children}
     </>
   );
 }

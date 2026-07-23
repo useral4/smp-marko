@@ -8,7 +8,10 @@ export const isGitHubStorageEnabled =
       process.env.KEYSTATIC_SECRET &&
       process.env.NEXT_PUBLIC_KEYSTATIC_GITHUB_APP_SLUG,
   );
-const useGitHub = isGitHubStorageEnabled;
+export const isGitHubSetupEnabled =
+  process.env.NODE_ENV !== "production" &&
+  process.env.NEXT_PUBLIC_KEYSTATIC_ALLOW_SETUP === "true";
+const useGitHub = isGitHubStorageEnabled || isGitHubSetupEnabled;
 const isRootApplication =
   process.env.KEYSTATIC_ROOT_APP === "true" || !/[\\/]cms$/.test(process.cwd());
 const contentRoot =

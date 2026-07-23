@@ -1,1 +1,5 @@
-export { default, isGitHubStorageEnabled } from "./cms/keystatic.config";
+export {
+  default,
+  isGitHubSetupEnabled,
+  isGitHubStorageEnabled,
+} from "./cms/keystatic.config";
