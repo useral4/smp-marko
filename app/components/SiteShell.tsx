@@ -96,7 +96,7 @@ export default function SiteShell({ children }: { children: React.ReactNode }) {
 
   useEffect(() => { document.body.style.overflow = menu || lead ? "hidden" : ""; }, [menu, lead]);
 
-  if (pathname.startsWith("/admin") || pathname.startsWith("/keystatic")) {
+  if (pathname.startsWith("/admin")) {
     return <>{children}</>;
   }
 

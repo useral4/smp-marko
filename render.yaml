@@ -9,15 +9,13 @@ services:
     envVars:
       - key: NODE_VERSION
         value: 20.19.0
-      - key: KEYSTATIC_STORAGE
-        value: github
-      - key: KEYSTATIC_ROOT_APP
-        value: true
-      - key: KEYSTATIC_SECRET
+      - key: ADMIN_SECRET
         generateValue: true
-      - key: KEYSTATIC_GITHUB_CLIENT_ID
+      - key: ADMIN_PASSWORD
         sync: false
-      - key: KEYSTATIC_GITHUB_CLIENT_SECRET
+      - key: GITHUB_CONTENT_TOKEN
         sync: false
-      - key: NEXT_PUBLIC_KEYSTATIC_GITHUB_APP_SLUG
-        sync: false
+      - key: GITHUB_CONTENT_REPO
+        value: useral4/smp-marko
+      - key: GITHUB_CONTENT_BRANCH
+        value: main
