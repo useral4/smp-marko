@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { objectMarkers } from "../data";
+import { objectMarkers as originalObjectMarkers } from "../data";
+import { projects } from "../generated-content";
 
 type MapInstance = {
   destroy: () => void;
@@ -30,6 +31,19 @@ declare global {
 }
 
 const scriptId = "yandex-maps-api";
+const cmsMarkers = projects.flatMap((project) => {
+  const lat = Number(project.latitude);
+  const lng = Number(project.longitude);
+  if (!Number.isFinite(lat) || !Number.isFinite(lng) || !project.latitude || !project.longitude) return [];
+  return [{
+    title: project.title,
+    description: [project.category, project.location].filter(Boolean).join(" · "),
+    lat,
+    lng,
+    color: "#168aa1",
+  }];
+});
+const objectMarkers = [...originalObjectMarkers, ...cmsMarkers];
 
 export default function ObjectsMap({ compact = false }: { compact?: boolean }) {
   const node = useRef<HTMLDivElement>(null);

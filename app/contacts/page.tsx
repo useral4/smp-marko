@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import ObjectsMap from "../components/ObjectsMap";
 import { LeadButton, SocialLinks, UiIcon } from "../components/SiteShell";
-import { contactAddress, contactEmail, contactMap, phones } from "../data";
+import { contactAddress, contactEmail, contactMap, phones } from "../generated-content";
 
 export const metadata:Metadata={title:"Контакты СМП МАРКО",description:"Телефоны Москвы и Санкт-Петербурга, почта, мессенджеры и карты СМП МАРКО."};
 

@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { createContext, FormEvent, useContext, useEffect, useState } from "react";
-import { contactAddress, contactEmail, phoneDisplay, phoneHref, phones, socials } from "../data";
+import { contactAddress, contactEmail, phoneDisplay, phoneHref, phones, socials } from "../generated-content";
 
 export function UiIcon({ name, size = 20 }: { name: string; size?: number }) {
   const paths: Record<string, React.ReactNode> = {

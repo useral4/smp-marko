@@ -1,0 +1,22 @@
+services:
+  - type: web
+    name: smp-marko-admin
+    runtime: node
+    plan: free
+    rootDir: cms
+    buildCommand: pnpm install --frozen-lockfile && pnpm build
+    startCommand: pnpm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_VERSION
+        value: 20.19.0
+      - key: KEYSTATIC_STORAGE
+        value: github
+      - key: KEYSTATIC_SECRET
+        generateValue: true
+      - key: KEYSTATIC_GITHUB_CLIENT_ID
+        sync: false
+      - key: KEYSTATIC_GITHUB_CLIENT_SECRET
+        sync: false
+      - key: NEXT_PUBLIC_KEYSTATIC_GITHUB_APP_SLUG
+        sync: false

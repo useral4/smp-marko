@@ -3,7 +3,8 @@ import Link from "next/link";
 import ObjectsMap from "./components/ObjectsMap";
 import ScrollStory from "./components/ScrollStory";
 import { LeadButton, ProjectForm, UiIcon } from "./components/SiteShell";
-import { newsItems, products, services } from "./data";
+import { products, services } from "./data";
+import { newsItems } from "./generated-content";
 
 export default function Home() {
   return <main id="top">

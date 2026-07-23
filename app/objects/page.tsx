@@ -3,49 +3,12 @@ import Image from "next/image";
 import Link from "next/link";
 import ObjectsMap from "../components/ObjectsMap";
 import { LeadButton, UiIcon } from "../components/SiteShell";
+import { projects as cmsProjects } from "../generated-content";
 
 export const metadata: Metadata = {
   title: "Объекты СМП МАРКО",
   description: "Карта и карточки реализованных объектов со сборно-монолитными перекрытиями МАРКО.",
 };
-
-const projects = [
-  {
-    title: "Реконструкция на Невском проспекте",
-    description: "Монтаж нового перекрытия поверх существующих конструкций.",
-    location: "Санкт-Петербург, Невский проспект, 12",
-    image: "/objects/nevsky-reconstruction.webp",
-    source: "https://smp-marko.com/montazh2",
-  },
-  {
-    title: "Перекрытие МАРКО — Балаев блок",
-    description: "Сборно-монолитное перекрытие для объекта нового строительства.",
-    location: "Новое строительство",
-    image: "/objects/balaev-house.webp",
-    source: "https://smp-marko.com/balaev",
-  },
-  {
-    title: "Монтаж перекрытия МАРКО-ТЕРМО",
-    description: "Монтаж несущих балок и элементов системы МАРКО-ТЕРМО.",
-    location: "Новое строительство",
-    image: "/objects/marko-termo.webp",
-    source: "https://smp-marko.com/montazh",
-  },
-  {
-    title: "Консоль, второй свет и лестничный проём",
-    description: "Перекрытие сложной геометрии с консолью и проёмами.",
-    location: "Октябрьский, Краснодарский край, ул. Парадная, 43",
-    image: "/objects/krasnodar-console.webp",
-    source: "https://smp-marko.com/konsol",
-  },
-  {
-    title: "Монтажная схема перекрытия",
-    description: "Проектная схема раскладки элементов перекрытия МАРКО.",
-    location: "Санкт-Петербург, ул. Исполкомская, 2",
-    image: "/objects/ispolkomskaya-scheme.webp",
-    source: "https://smp-marko.com/shemamarko",
-  },
-];
 
 export default function ObjectsPage() {
   return <main id="top">
@@ -74,21 +37,24 @@ export default function ObjectsPage() {
           <p>Реальные фотографии, монтажные решения и адреса объектов.</p>
         </div>
         <div className="object-project-grid">
-          {projects.map((project, index) => <a
-            className={`object-project-card ${index === 0 ? "object-project-featured" : ""}`}
-            href={project.source}
+          {cmsProjects.map((project) => <a
+            className={`object-project-card ${project.featured ? "object-project-featured" : ""}`}
+            href={`/objects/${project.slug}`}
             key={project.title}
-            target="_blank"
-            rel="noreferrer"
           >
             <div className="object-project-image">
-              <Image src={project.image} alt={project.title} fill sizes={index === 0 ? "(max-width:900px) 100vw,58vw" : "(max-width:900px) 100vw,50vw"} />
+              <Image src={project.image} alt={project.title} fill sizes={project.featured ? "(max-width:900px) 100vw,58vw" : "(max-width:900px) 100vw,50vw"} />
             </div>
             <div className="object-project-body">
-              <span>{index === 0 ? "Реконструкция" : "Новое строительство"}</span>
+              <span>{project.category}</span>
               <h3>{project.title}</h3>
               <p>{project.description}</p>
               <small>{project.location}</small>
+              {(project.area || project.system || project.year) && <dl className="object-project-meta">
+                {project.area && <div><dt>Площадь</dt><dd>{project.area}</dd></div>}
+                {project.system && <div><dt>Система</dt><dd>{project.system}</dd></div>}
+                {project.year && <div><dt>Год</dt><dd>{project.year}</dd></div>}
+              </dl>}
               <b>Подробнее об объекте <UiIcon name="arrow" size={18} /></b>
             </div>
           </a>)}

@@ -7,3 +7,9 @@ work/
 outputs/
 *.log
 .DS_Store
+.env
+.env.local
+.env.production.local
+!.env.example
+!cms/.env.example
+cms/public/uploads/

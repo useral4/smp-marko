@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { LeadButton, UiIcon } from "../../components/SiteShell";
-import { newsItems } from "../../data";
+import { newsItems } from "../../generated-content";
 
 export function generateStaticParams(){return newsItems.map((item)=>({slug:item.slug}))}
 

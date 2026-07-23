@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { UiIcon } from "../components/SiteShell";
-import { articles } from "../data";
+import { articles } from "../generated-content";
 
 export const metadata:Metadata={title:"Статьи о перекрытиях МАРКО",description:"Практические материалы о проектировании, монтаже и реконструкции сборно-монолитных перекрытий."};
 

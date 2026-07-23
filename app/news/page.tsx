@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { UiIcon } from "../components/SiteShell";
-import { newsItems, socials } from "../data";
+import { newsItems, socials } from "../generated-content";
 
 export const metadata:Metadata={title:"Новости СМП МАРКО",description:"Новости компании, новые объекты, монтажи и технические материалы СМП МАРКО."};
 
