@@ -31,6 +31,13 @@ corepack pnpm content:sync
 corepack pnpm exec next build
 chown -R smpmarko:smpmarko "$release"
 
+# If the editor saved again during the build, keep the newer live data.
+# The timer will build the newest commit on its next run.
+latest="$(git ls-remote "$repo" refs/heads/main | awk '{print $1}')"
+if [ "$latest" != "$remote" ]; then
+  exit 0
+fi
+
 ln -sfn /opt/smp-marko/shared/.env.production "$release/.env.production"
 ln -sfn "$release" /opt/smp-marko/current.next
 mv -Tf /opt/smp-marko/current.next /opt/smp-marko/current
