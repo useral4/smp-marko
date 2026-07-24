@@ -2,6 +2,7 @@
   "name": "smp-marko-moscow",
   "version": "1.0.0",
   "private": true,
+  "packageManager": "pnpm@10.26.1",
   "type": "module",
   "scripts": {
     "dev": "next dev",
