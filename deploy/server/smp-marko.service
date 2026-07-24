@@ -1,0 +1,23 @@
+[Unit]
+Description=SMP Marko website and admin
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=smpmarko
+Group=smpmarko
+WorkingDirectory=/opt/smp-marko/current
+EnvironmentFile=/opt/smp-marko/shared/.env.production
+ExecStart=/usr/bin/node /opt/smp-marko/current/node_modules/next/dist/bin/next start -H 0.0.0.0 -p 3007
+Restart=always
+RestartSec=5
+TimeoutStopSec=20
+KillSignal=SIGTERM
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+ProtectHome=true
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,11 @@
+[Unit]
+Description=Update SMP Marko from GitHub
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/opt/smp-marko/update.sh
+Nice=10
+IOSchedulingClass=best-effort
+IOSchedulingPriority=7

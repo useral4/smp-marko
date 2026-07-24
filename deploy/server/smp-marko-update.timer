@@ -1,0 +1,12 @@
+[Unit]
+Description=Check SMP Marko updates
+
+[Timer]
+OnBootSec=2min
+OnUnitActiveSec=1min
+RandomizedDelaySec=10
+Persistent=true
+Unit=smp-marko-update.service
+
+[Install]
+WantedBy=timers.target
