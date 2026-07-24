@@ -3,14 +3,15 @@ import Image from "next/image";
 import Link from "next/link";
 import ObjectsMap from "../components/ObjectsMap";
 import { LeadButton, UiIcon } from "../components/SiteShell";
-import { projects as cmsProjects } from "../generated-content";
+import { readProjects } from "../../lib/runtime-content";
 
 export const metadata: Metadata = {
   title: "Объекты СМП МАРКО",
   description: "Карта и карточки реализованных объектов со сборно-монолитными перекрытиями МАРКО.",
 };
 
-export default function ObjectsPage() {
+export default async function ObjectsPage() {
+  const cmsProjects = await readProjects();
   return <main id="top">
     <section className="page-hero">
       <div className="container">
@@ -27,7 +28,7 @@ export default function ObjectsPage() {
         <div><h2>География работ</h2></div>
         <p>Приближайте карту и открывайте метки объектов.</p>
       </div>
-      <div className="map-frame"><ObjectsMap /></div>
+      <div className="map-frame"><ObjectsMap projects={cmsProjects} /></div>
     </section>
 
     <section className="section object-projects">

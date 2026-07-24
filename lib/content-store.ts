@@ -8,6 +8,7 @@ const repo = process.env.GITHUB_CONTENT_REPO || "useral4/smp-marko";
 const branch = process.env.GITHUB_CONTENT_BRANCH || "main";
 const token = process.env.GITHUB_CONTENT_TOKEN;
 const hostedWithoutStorage = process.env.RENDER === "true" && !token;
+const localStorageEnabled = process.env.RENDER !== "true";
 const apiBase = `https://api.github.com/repos/${repo}`;
 
 function assertType(value: string): asserts value is ContentType {
@@ -97,7 +98,7 @@ async function deleteGitHubFile(pathname: string, message: string) {
 export async function listContent(rawType: string) {
   assertType(rawType);
   const type = rawType;
-  if (token) {
+  if (!localStorageEnabled && token) {
     const directory = `cms/content/${type}`;
     const response = await githubRequest(
       `${apiBase}/contents/${directory}?ref=${encodeURIComponent(branch)}`,
@@ -171,7 +172,8 @@ export async function saveContent(input: {
         `Удаление старого адреса: ${type}/${previousSlug}`,
       );
     }
-  } else {
+  }
+  if (localStorageEnabled) {
     const targetPath = path.join(process.cwd(), target);
     await fs.mkdir(path.dirname(targetPath), { recursive: true });
     await fs.writeFile(targetPath, contents, "utf8");
@@ -194,7 +196,8 @@ export async function deleteContent(rawType: string, rawSlug: string) {
   const pathname = relativeFile(rawType, slug);
   if (token) {
     await deleteGitHubFile(pathname, `Удаление: ${rawType}/${slug}`);
-  } else {
+  }
+  if (localStorageEnabled) {
     await fs.rm(path.join(process.cwd(), pathname), { force: true });
   }
 }
@@ -229,7 +232,8 @@ export async function saveUpload(input: {
   const pathname = `public/uploads/objects/${slug}/${filename}`;
   if (token) {
     await putGitHubFile(pathname, input.bytes, `Фото объекта: ${slug}`);
-  } else {
+  }
+  if (localStorageEnabled) {
     const target = path.join(process.cwd(), pathname);
     await fs.mkdir(path.dirname(target), { recursive: true });
     await fs.writeFile(target, input.bytes);

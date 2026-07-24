@@ -611,7 +611,7 @@ export default function AdminPanel() {
       setSelected({ ...selected, slug: result.slug });
       setPreviousSlug(result.slug);
       await load(section);
-      setNotice("Сохранено. Обновление сайта обычно занимает 1–2 минуты.");
+      setNotice("Сохранено. Изменения уже доступны на сайте.");
     } catch (nextError) {
       setError(nextError instanceof Error ? nextError.message : "Не удалось сохранить");
     } finally {
@@ -721,7 +721,7 @@ export default function AdminPanel() {
               <button type="button" className="admin-primary-button" disabled={saving} onClick={() => void save()}>
                 {saving ? "Сохраняем…" : "Сохранить изменения"}
               </button>
-              <span>После сохранения подождите 1–2 минуты и обновите страницу сайта.</span>
+              <span>После сохранения изменения сразу доступны на сайте.</span>
             </div>
           </section>
         ) : (

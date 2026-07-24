@@ -3,11 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { LeadButton, UiIcon } from "../../components/SiteShell";
-import { projects } from "../../generated-content";
-
-export function generateStaticParams() {
-  return projects.map((project) => ({ slug: project.slug }));
-}
+import { readProjects } from "../../../lib/runtime-content";
 
 export async function generateMetadata({
   params,
@@ -15,6 +11,7 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
+  const projects = await readProjects();
   const project = projects.find((item) => item.slug === slug);
   return {
     title: project ? `${project.title} — СМП МАРКО` : "Объект — СМП МАРКО",
@@ -28,6 +25,7 @@ export default async function ObjectPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
+  const projects = await readProjects();
   const project = projects.find((item) => item.slug === slug);
   if (!project) notFound();
 

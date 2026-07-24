@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { objectMarkers as originalObjectMarkers } from "../data";
-import { projects } from "../generated-content";
+import type { CmsProject } from "../generated-content";
 
 type MapInstance = {
   destroy: () => void;
@@ -31,25 +31,33 @@ declare global {
 }
 
 const scriptId = "yandex-maps-api";
-const cmsMarkers = projects.flatMap((project) => {
-  const lat = Number(project.latitude);
-  const lng = Number(project.longitude);
-  if (!Number.isFinite(lat) || !Number.isFinite(lng) || !project.latitude || !project.longitude) return [];
-  return [{
-    title: project.title,
-    description: [project.category, project.location].filter(Boolean).join(" · "),
-    lat,
-    lng,
-    color: "#168aa1",
-  }];
-});
-const objectMarkers = [...originalObjectMarkers, ...cmsMarkers];
 
-export default function ObjectsMap({ compact = false }: { compact?: boolean }) {
+export default function ObjectsMap({
+  compact = false,
+  projects = [],
+}: {
+  compact?: boolean;
+  projects?: CmsProject[];
+}) {
   const node = useRef<HTMLDivElement>(null);
   const map = useRef<MapInstance | null>(null);
   const [loaded, setLoaded] = useState(false);
   const [failed, setFailed] = useState(false);
+  const objectMarkers = useMemo(() => {
+    const cmsMarkers = projects.flatMap((project) => {
+      const lat = Number(project.latitude);
+      const lng = Number(project.longitude);
+      if (!Number.isFinite(lat) || !Number.isFinite(lng) || !project.latitude || !project.longitude) return [];
+      return [{
+        title: project.title,
+        description: [project.category, project.location].filter(Boolean).join(" · "),
+        lat,
+        lng,
+        color: "#168aa1",
+      }];
+    });
+    return [...originalObjectMarkers, ...cmsMarkers];
+  }, [projects]);
 
   useEffect(() => {
     let cancelled = false;
@@ -118,7 +126,7 @@ export default function ObjectsMap({ compact = false }: { compact?: boolean }) {
       map.current?.destroy();
       map.current = null;
     };
-  }, [compact]);
+  }, [compact, objectMarkers]);
 
   return <div className="yandex-objects-map">
     <div className="yandex-map-canvas" ref={node}/>

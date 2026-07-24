@@ -4,7 +4,23 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { createContext, FormEvent, useContext, useEffect, useState } from "react";
-import { contactAddress, contactEmail, phoneDisplay, phoneHref, phones, socials } from "../generated-content";
+import type { CmsPhone, CmsSocial } from "../generated-content";
+
+export type SiteShellContent = {
+  phones: CmsPhone[];
+  socials: CmsSocial[];
+  email: string;
+  address: string;
+  contactMap: string;
+};
+
+const SiteContentContext = createContext<SiteShellContent>({
+  phones: [],
+  socials: [],
+  email: "",
+  address: "",
+  contactMap: "",
+});
 
 export function UiIcon({ name, size = 20 }: { name: string; size?: number }) {
   const paths: Record<string, React.ReactNode> = {
@@ -39,10 +55,12 @@ export function LeadButton({ children = "Расчёт за 1 день", classNam
 }
 
 export function SocialLinks({ labels = false }: { labels?: boolean }) {
+  const { socials } = useContext(SiteContentContext);
   return <div className={`brand-socials ${labels ? "with-labels" : ""}`}>{socials.map((s) => <a className={`brand-social-${s.icon}`} key={s.name} href={s.href} target="_blank" rel="noreferrer" aria-label={s.name}><BrandIcon name={s.icon}/>{labels && <span>{s.name}</span>}</a>)}</div>;
 }
 
 export function ProjectForm({ className = "" }: { className?: string }) {
+  const { email: contactEmail } = useContext(SiteContentContext);
   const [prepared, setPrepared] = useState(false);
 
   const submit = (event: FormEvent<HTMLFormElement>) => {
@@ -78,6 +96,7 @@ export function ProjectForm({ className = "" }: { className?: string }) {
 }
 
 function MessengerDock() {
+  const { socials } = useContext(SiteContentContext);
   const [open, setOpen] = useState(false);
   const messengerLinks = socials.filter((social) => ["MAX", "WhatsApp", "Telegram", "ВКонтакте"].includes(social.name));
   return <div className={`messenger-dock ${open ? "is-open" : ""}`}>
@@ -86,11 +105,25 @@ function MessengerDock() {
   </div>;
 }
 
-export default function SiteShell({ children }: { children: React.ReactNode }) {
+export default function SiteShell({
+  children,
+  siteContent,
+}: {
+  children: React.ReactNode;
+  siteContent: SiteShellContent;
+}) {
   const pathname = usePathname();
   const [menu, setMenu] = useState(false);
   const [lead, setLead] = useState(false);
   const [cookie, setCookie] = useState(false);
+  const {
+    phones,
+    socials,
+    email: contactEmail,
+    address: contactAddress,
+  } = siteContent;
+  const phoneDisplay = phones[0]?.display ?? "";
+  const phoneHref = phones[0]?.href ?? "";
 
   useEffect(() => { setCookie(localStorage.getItem("marko-cookie") !== "accepted"); }, []);
 
@@ -102,7 +135,7 @@ export default function SiteShell({ children }: { children: React.ReactNode }) {
 
   const links = [["Услуги","/services"],["Объекты","/objects"],["Реконструкция","/reconstruction"],["Технология","/technology"],["Статьи","/articles"],["Новости","/news"],["Контакты","/contacts"]];
 
-  return <LeadContext.Provider value={() => setLead(true)}><>
+  return <SiteContentContext.Provider value={siteContent}><LeadContext.Provider value={() => setLead(true)}><>
     <header className="header"><div className="container header-inner"><Logo/><nav className="desktop-nav">{links.map(([title,href])=><Link key={href} href={href}>{title}</Link>)}</nav><div className="header-actions"><a className="header-phone" href={phoneHref}><UiIcon name="phone" size={17}/><span>{phoneDisplay}</span></a><LeadButton className="button button-small"/><button className="burger" onClick={()=>setMenu(true)} aria-label="Открыть меню"><UiIcon name="menu" size={24}/></button></div></div></header>
     <div className={`mobile-menu ${menu ? "is-open" : ""}`}><div className="mobile-menu-head"><Logo/><button onClick={()=>setMenu(false)} aria-label="Закрыть меню"><UiIcon name="close"/></button></div><nav>{links.map(([title,href],index)=><Link onClick={()=>setMenu(false)} key={href} href={href}>{title}<span>{String(index + 1).padStart(2,"0")}</span></Link>)}</nav><div className="mobile-menu-bottom"><div className="mobile-phones">{phones.map((phone)=><a key={phone.href} href={phone.href}>{phone.display}</a>)}</div><LeadButton>Отправить план</LeadButton></div></div>
     {children}
@@ -110,5 +143,5 @@ export default function SiteShell({ children }: { children: React.ReactNode }) {
     <MessengerDock/>
     {cookie&&<div className="cookie"><div><b>Мы используем cookie</b><p>Они помогают сайту работать корректно.</p></div><button onClick={()=>{localStorage.setItem("marko-cookie","accepted");setCookie(false)}}>Хорошо</button><button className="cookie-close" onClick={()=>setCookie(false)} aria-label="Закрыть"><UiIcon name="close" size={18}/></button></div>}
     {lead&&<div className="modal-backdrop" onMouseDown={(event)=>{if(event.target===event.currentTarget)setLead(false)}}><div className="modal lead-modal"><button className="modal-close" onClick={()=>setLead(false)} aria-label="Закрыть"><UiIcon name="close"/></button><div className="eyebrow"><span/>Расчёт за 1 рабочий день</div><h2>Отправьте план перекрытия</h2><p>Принимаем PDF, DWG, фото плана или эскиз. Инженер подберёт систему и подготовит предварительный расчёт.</p><ProjectForm className="modal-project-form"/></div></div>}
-  </></LeadContext.Provider>;
+  </></LeadContext.Provider></SiteContentContext.Provider>;
 }
