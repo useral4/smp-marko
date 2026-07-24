@@ -24,12 +24,12 @@ fi
 
 actual="$(runuser -u smpmarko -- git -C "$release" rev-parse HEAD)"
 test "$actual" = "$remote"
-chown -R smpmarko:smpmarko "$release"
 
 cd "$release"
-runuser -u smpmarko -- corepack pnpm install --frozen-lockfile
-runuser -u smpmarko -- corepack pnpm content:sync
-runuser -u smpmarko -- corepack pnpm exec next build
+corepack pnpm install --frozen-lockfile
+corepack pnpm content:sync
+corepack pnpm exec next build
+chown -R smpmarko:smpmarko "$release"
 
 ln -sfn /opt/smp-marko/shared/.env.production "$release/.env.production"
 ln -sfn "$release" /opt/smp-marko/current.next
