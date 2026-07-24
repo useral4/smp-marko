@@ -2,6 +2,10 @@ import type { Metadata } from "next";
 import "./globals.css";
 import SiteShell from "./components/SiteShell";
 
+// Content is edited through /admin and deployed automatically.
+// Always serve the active release instead of keeping stale page HTML.
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "СМП МАРКО — сборно-монолитные перекрытия",
   description:
