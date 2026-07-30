@@ -11,16 +11,48 @@ type Phone = { city: string; display: string; href: string };
 type Social = { name: string; href: string; icon: string };
 type ContentData = Record<string, unknown>;
 type Item = { slug: string; data: ContentData };
-type SectionKey = "objects" | "articles" | "news" | "site";
+type SectionKey =
+  | "pages"
+  | "services"
+  | "objects"
+  | "articles"
+  | "news"
+  | "documents"
+  | "site";
 
-const sections: Array<{ key: SectionKey; title: string; single?: boolean }> = [
+const sections: Array<{
+  key: SectionKey;
+  title: string;
+  single?: boolean;
+  fixed?: boolean;
+}> = [
+  { key: "pages", title: "Главная и страницы", fixed: true },
+  { key: "services", title: "Услуги" },
   { key: "objects", title: "Объекты" },
   { key: "articles", title: "Статьи" },
   { key: "news", title: "Новости" },
+  { key: "documents", title: "Технические документы" },
   { key: "site", title: "Контакты и ссылки", single: true },
 ];
 
 const emptyData: Record<SectionKey, ContentData> = {
+  pages: {
+    title: "",
+    route: "",
+    published: true,
+    order: 100,
+    heading: "",
+    lead: "",
+  },
+  services: {
+    title: "",
+    published: true,
+    order: 100,
+    short: "",
+    image: "",
+    lead: "",
+    bullets: [],
+  },
   objects: {
     title: "",
     published: true,
@@ -57,6 +89,14 @@ const emptyData: Record<SectionKey, ContentData> = {
     sourceHref: "",
     paragraphs: [],
     facts: [],
+  },
+  documents: {
+    title: "",
+    published: true,
+    order: 100,
+    category: "",
+    note: "",
+    href: "",
   },
   site: { phones: [], email: "", address: "", contactMap: "", socials: [] },
 };
@@ -193,6 +233,224 @@ function Toggle({
       <i />
       <span>{label}</span>
     </label>
+  );
+}
+
+type PageFieldSpec = {
+  key: string;
+  label: string;
+  multiline?: boolean;
+  lines?: boolean;
+};
+
+const pageFieldSchemas: Record<string, PageFieldSpec[]> = {
+  home: [
+    { key: "eyebrow", label: "Надзаголовок первого экрана" },
+    { key: "heading", label: "Главный заголовок" },
+    { key: "accent", label: "Выделенное слово" },
+    { key: "lead", label: "Описание первого экрана", multiline: true },
+    { key: "buttonText", label: "Текст главной кнопки" },
+    { key: "fileNote", label: "Подсказка о файлах" },
+    { key: "introHeading", label: "Заголовок «Возможности»" },
+    { key: "introText", label: "Текст «Возможности»", multiline: true },
+    { key: "servicesHeading", label: "Заголовок блока услуг" },
+    { key: "productsHeading", label: "Заголовок сравнения систем" },
+    { key: "productsText", label: "Пояснение к сравнению", multiline: true },
+    { key: "objectsHeading", label: "Заголовок карты объектов" },
+    { key: "objectsText", label: "Пояснение к карте", multiline: true },
+    { key: "formHeading", label: "Заголовок формы" },
+    { key: "formText", label: "Описание формы", multiline: true },
+    { key: "newsHeading", label: "Заголовок новостей" },
+    { key: "ctaHeading", label: "Финальный призыв", multiline: true },
+    { key: "ctaButton", label: "Кнопка финального призыва" },
+  ],
+  services: [
+    { key: "heading", label: "Заголовок страницы" },
+    { key: "lead", label: "Вводный текст", multiline: true },
+  ],
+  technology: [
+    { key: "heading", label: "Заголовок страницы" },
+    { key: "lead", label: "Вводный текст", multiline: true },
+    { key: "systemHeading", label: "Заголовок состава системы" },
+    { key: "systemItems", label: "Элементы системы", lines: true },
+    { key: "galleryHeading", label: "Заголовок блока монтажа" },
+    { key: "galleryText", label: "Описание блока монтажа", multiline: true },
+    { key: "slabHeading", label: "Заголовок блока о конструкции" },
+    { key: "slabText", label: "Текст блока о конструкции", multiline: true },
+    { key: "benefitsHeading", label: "Заголовок преимуществ" },
+    { key: "designersHeading", label: "Заголовок блока для специалистов" },
+    { key: "designersText", label: "Описание блока для специалистов", multiline: true },
+    { key: "designersButton", label: "Кнопка раздела специалистов" },
+    { key: "ctaHeading", label: "Финальный призыв" },
+    { key: "ctaButton", label: "Кнопка финального призыва" },
+  ],
+  designers: [
+    { key: "heading", label: "Заголовок страницы" },
+    { key: "lead", label: "Вводный текст", multiline: true },
+    { key: "basicsHeading", label: "Заголовок исходных параметров" },
+    { key: "basicsText", label: "Описание исходных параметров", multiline: true },
+    { key: "documentsHeading", label: "Заголовок библиотеки" },
+    { key: "documentsText", label: "Описание библиотеки", multiline: true },
+    { key: "requestHeading", label: "Заголовок консультации" },
+    { key: "requestText", label: "Описание консультации", multiline: true },
+    { key: "requestButton", label: "Кнопка консультации" },
+  ],
+  reconstruction: [
+    { key: "heading", label: "Заголовок страницы" },
+    { key: "lead", label: "Вводный текст", multiline: true },
+    { key: "buttonText", label: "Главная кнопка" },
+    { key: "sectionHeading", label: "Заголовок области применения" },
+    { key: "processHeading", label: "Заголовок этапов" },
+    { key: "ctaHeading", label: "Финальный призыв", multiline: true },
+    { key: "ctaButton", label: "Кнопка финального призыва" },
+  ],
+  prices: [
+    { key: "heading", label: "Заголовок страницы" },
+    { key: "lead", label: "Вводный текст", multiline: true },
+    { key: "worksHeading", label: "Заголовок стоимости работ" },
+  ],
+  about: [
+    { key: "heading", label: "Заголовок страницы" },
+    { key: "lead", label: "Вводный текст", multiline: true },
+    { key: "sectionHeading", label: "Заголовок о компании" },
+    { key: "sectionText", label: "Текст о компании", multiline: true },
+    { key: "ctaHeading", label: "Финальный призыв" },
+    { key: "ctaButton", label: "Кнопка финального призыва" },
+  ],
+};
+
+function PageFields({
+  data,
+  set,
+  slug,
+}: {
+  data: ContentData;
+  set: (key: string, value: unknown) => void;
+  slug: string;
+}) {
+  const route = text(data.route);
+  const schema = pageFieldSchemas[slug] || [
+    { key: "heading", label: "Заголовок страницы" },
+    { key: "lead", label: "Вводный текст", multiline: true },
+  ];
+  return (
+    <>
+      <div className="admin-upload-box">
+        <div>
+          <b>Страница на сайте</b>
+          <span>{route || "Адрес не указан"}</span>
+        </div>
+        {route && (
+          <a className="admin-secondary-button" href={route} target="_blank">
+            Открыть страницу ↗
+          </a>
+        )}
+      </div>
+      <div className="admin-form-grid">
+        <Field label="Название в админке" value={text(data.title)} onChange={(v) => set("title", v)} />
+        <Field label="Порядок в списке" value={number(data.order)} onChange={(v) => set("order", Number(v))} type="number" />
+        {schema.map((field) =>
+          field.lines ? (
+            <LinesField
+              key={field.key}
+              label={field.label}
+              value={strings(data[field.key])}
+              onChange={(value) => set(field.key, value)}
+            />
+          ) : (
+            <Field
+              key={field.key}
+              label={field.label}
+              value={text(data[field.key])}
+              onChange={(value) => set(field.key, value)}
+              multiline={field.multiline}
+            />
+          ),
+        )}
+      </div>
+      <Toggle label="Показывать страницу на сайте" value={checked(data.published)} onChange={(v) => set("published", v)} />
+    </>
+  );
+}
+
+function ServiceFields({
+  data,
+  set,
+  slug,
+}: {
+  data: ContentData;
+  set: (key: string, value: unknown) => void;
+  slug: string;
+}) {
+  const [uploading, setUploading] = useState(false);
+  const upload = async (file: File) => {
+    if (!slug) throw new Error("Сначала укажите адрес страницы");
+    setUploading(true);
+    try {
+      const form = new FormData();
+      form.set("type", "services");
+      form.set("slug", slug);
+      form.set("file", file);
+      const result = await jsonRequest<{ path: string }>("/api/admin/upload", {
+        method: "POST",
+        body: form,
+      });
+      set("image", result.path);
+    } finally {
+      setUploading(false);
+    }
+  };
+  return (
+    <>
+      <div className="admin-form-grid">
+        <Field label="Название услуги" value={text(data.title)} onChange={(v) => set("title", v)} />
+        <Field label="Порядок" value={number(data.order)} onChange={(v) => set("order", Number(v))} type="number" />
+        <Field label="Краткое описание для карточки" value={text(data.short)} onChange={(v) => set("short", v)} multiline />
+        <Field label="Вводный текст страницы услуги" value={text(data.lead)} onChange={(v) => set("lead", v)} multiline />
+        <LinesField label="Что входит в услугу" value={strings(data.bullets)} onChange={(v) => set("bullets", v)} />
+      </div>
+      <Toggle label="Показывать на сайте" value={checked(data.published)} onChange={(v) => set("published", v)} />
+      <div className="admin-upload-box">
+        <div>
+          <b>Фотография услуги</b>
+          <span>{text(data.image) || "Фотография не выбрана"}</span>
+        </div>
+        <label className="admin-secondary-button">
+          {uploading ? "Загрузка…" : "Загрузить фото"}
+          <input
+            hidden
+            type="file"
+            accept=".jpg,.jpeg,.png,.webp"
+            disabled={uploading}
+            onChange={(event) => {
+              const file = event.target.files?.[0];
+              if (file) void upload(file);
+            }}
+          />
+        </label>
+      </div>
+    </>
+  );
+}
+
+function DocumentFields({
+  data,
+  set,
+}: {
+  data: ContentData;
+  set: (key: string, value: unknown) => void;
+}) {
+  return (
+    <>
+      <div className="admin-form-grid">
+        <Field label="Название документа" value={text(data.title)} onChange={(v) => set("title", v)} />
+        <Field label="Категория" value={text(data.category)} onChange={(v) => set("category", v)} />
+        <Field label="Ссылка на документ" value={text(data.href)} onChange={(v) => set("href", v)} />
+        <Field label="Порядок" value={number(data.order)} onChange={(v) => set("order", Number(v))} type="number" />
+        <Field label="Краткое пояснение" value={text(data.note)} onChange={(v) => set("note", v)} multiline />
+      </div>
+      <Toggle label="Показывать в технической библиотеке" value={checked(data.published)} onChange={(v) => set("published", v)} />
+    </>
   );
 }
 
@@ -502,7 +760,7 @@ function Login({
 export default function AdminPanel() {
   const [session, setSession] = useState<"loading" | "guest" | "user">("loading");
   const [configured, setConfigured] = useState(true);
-  const [section, setSection] = useState<SectionKey>("objects");
+  const [section, setSection] = useState<SectionKey>("pages");
   const [items, setItems] = useState<Item[]>([]);
   const [selected, setSelected] = useState<Item | null>(null);
   const [previousSlug, setPreviousSlug] = useState("");
@@ -619,7 +877,7 @@ export default function AdminPanel() {
     }
   };
   const remove = async () => {
-    if (!selected || section === "site") return;
+    if (!selected || section === "site" || currentSection.fixed) return;
     if (!window.confirm(`Удалить «${text(selected.data.title)}»?`)) return;
     setSaving(true);
     try {
@@ -676,7 +934,7 @@ export default function AdminPanel() {
             <span>Раздел</span>
             <h1>{currentSection.title}</h1>
           </div>
-          {!currentSection.single && !selected && (
+          {!currentSection.single && !currentSection.fixed && !selected && (
             <button type="button" className="admin-primary-button" onClick={create}>
               Добавить
             </button>
@@ -698,14 +956,14 @@ export default function AdminPanel() {
                 <button type="button" className="admin-primary-button" disabled={saving} onClick={() => void save()}>
                   {saving ? "Сохраняем…" : "Сохранить"}
                 </button>
-                {section !== "site" && previousSlug && (
+                {section !== "site" && !currentSection.fixed && previousSlug && (
                   <button type="button" className="admin-danger-button" disabled={saving} onClick={() => void remove()}>
                     Удалить
                   </button>
                 )}
               </div>
             </div>
-            {section !== "site" && (
+            {section !== "site" && section !== "pages" && (
               <Field
                 label="Адрес страницы"
                 value={selected.slug}
@@ -713,9 +971,12 @@ export default function AdminPanel() {
                 hint="Латиницей, без пробелов. Можно сформировать из названия."
               />
             )}
+            {section === "pages" && <PageFields data={selected.data} set={setData} slug={selected.slug} />}
+            {section === "services" && <ServiceFields data={selected.data} set={setData} slug={selected.slug || makeSlug(text(selected.data.title))} />}
             {section === "objects" && <ObjectFields data={selected.data} set={setData} slug={selected.slug || makeSlug(text(selected.data.title))} />}
             {section === "articles" && <ArticleFields data={selected.data} set={setData} />}
             {section === "news" && <NewsFields data={selected.data} set={setData} />}
+            {section === "documents" && <DocumentFields data={selected.data} set={setData} />}
             {section === "site" && <SiteFields data={selected.data} set={setData} />}
             <div className="admin-editor-footer">
               <button type="button" className="admin-primary-button" disabled={saving} onClick={() => void save()}>

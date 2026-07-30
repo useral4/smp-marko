@@ -20,6 +20,36 @@ export type CmsSiteContent = {
   contactMap: string;
 };
 
+export type CmsPage = {
+  slug: string;
+  title: string;
+  route: string;
+  published: boolean;
+  order: number;
+  [key: string]: unknown;
+};
+
+export type CmsService = {
+  slug: string;
+  title: string;
+  short: string;
+  image: string;
+  lead: string;
+  bullets: string[];
+  published: boolean;
+  order: number;
+};
+
+export type CmsDocument = {
+  slug: string;
+  title: string;
+  category: string;
+  note: string;
+  href: string;
+  published: boolean;
+  order: number;
+};
+
 const contentRoot = path.join(process.cwd(), "cms", "content");
 
 async function readCollection(name: string) {
@@ -99,6 +129,60 @@ export async function readProjects(): Promise<CmsProject[]> {
         featured: false,
         ...project,
       }) as unknown as CmsProject,
+  );
+}
+
+export async function readPages(): Promise<CmsPage[]> {
+  return (await readCollection("pages")) as unknown as CmsPage[];
+}
+
+export async function readPage(slug: string): Promise<CmsPage | null> {
+  const pages = await readPages();
+  return pages.find((page) => page.slug === slug) || null;
+}
+
+export function pageText(
+  page: CmsPage | null,
+  key: string,
+  fallback: string,
+) {
+  return typeof page?.[key] === "string" ? (page[key] as string) : fallback;
+}
+
+export function pageStrings(
+  page: CmsPage | null,
+  key: string,
+  fallback: string[],
+) {
+  return Array.isArray(page?.[key])
+    ? (page[key] as unknown[]).map(String)
+    : fallback;
+}
+
+export async function readServices(): Promise<CmsService[]> {
+  const entries = await readCollection("services");
+  return entries.map(
+    (service) =>
+      ({
+        short: "",
+        image: "",
+        lead: "",
+        bullets: [],
+        ...service,
+      }) as unknown as CmsService,
+  );
+}
+
+export async function readDocuments(): Promise<CmsDocument[]> {
+  const entries = await readCollection("documents");
+  return entries.map(
+    (document) =>
+      ({
+        category: "",
+        note: "",
+        href: "",
+        ...document,
+      }) as unknown as CmsDocument,
   );
 }
 

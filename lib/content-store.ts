@@ -1,7 +1,15 @@
 import { promises as fs } from "node:fs";
 import path from "node:path";
 
-export const contentTypes = ["objects", "articles", "news", "site"] as const;
+export const contentTypes = [
+  "objects",
+  "articles",
+  "news",
+  "pages",
+  "services",
+  "documents",
+  "site",
+] as const;
 export type ContentType = (typeof contentTypes)[number];
 
 const repo = process.env.GITHUB_CONTENT_REPO || "useral4/smp-marko";
@@ -211,8 +219,8 @@ export async function saveUpload(input: {
   if (hostedWithoutStorage) {
     throw new Error("Загрузка фотографий ещё подключается.");
   }
-  if (!["objects"].includes(input.type)) {
-    throw new Error("Загрузка файлов разрешена только для объектов");
+  if (!["objects", "services"].includes(input.type)) {
+    throw new Error("Загрузка файлов разрешена только для объектов и услуг");
   }
   const slug = safeSlug(input.slug);
   const extension = path.extname(input.name).toLowerCase();
@@ -229,7 +237,7 @@ export async function saveUpload(input: {
     .replace(/^-|-$/g, "")
     .slice(0, 40);
   const filename = `${Date.now()}-${base || "photo"}${extension}`;
-  const pathname = `public/uploads/objects/${slug}/${filename}`;
+  const pathname = `public/uploads/${input.type}/${slug}/${filename}`;
   if (token) {
     await putGitHubFile(pathname, input.bytes, `Фото объекта: ${slug}`);
   }

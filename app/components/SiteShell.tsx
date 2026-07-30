@@ -133,7 +133,7 @@ export default function SiteShell({
     return <>{children}</>;
   }
 
-  const links = [["Услуги","/services"],["Объекты","/objects"],["Реконструкция","/reconstruction"],["Технология","/technology"],["Статьи","/articles"],["Новости","/news"],["Контакты","/contacts"]];
+  const links = [["Услуги","/services"],["Объекты","/objects"],["Реконструкция","/reconstruction"],["Технология","/technology"],["Проектировщикам","/designers"],["Статьи","/articles"],["Новости","/news"],["Контакты","/contacts"]];
 
   return <SiteContentContext.Provider value={siteContent}><LeadContext.Provider value={() => setLead(true)}><>
     <header className="header"><div className="container header-inner"><Logo/><nav className="desktop-nav">{links.map(([title,href])=><Link key={href} href={href}>{title}</Link>)}</nav><div className="header-actions"><a className="header-phone" href={phoneHref}><UiIcon name="phone" size={17}/><span>{phoneDisplay}</span></a><LeadButton className="button button-small"/><button className="burger" onClick={()=>setMenu(true)} aria-label="Открыть меню"><UiIcon name="menu" size={24}/></button></div></div></header>
