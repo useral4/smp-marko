@@ -43,7 +43,12 @@ export async function POST(request: NextRequest) {
   const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
   if (rateLimited(ip)) return NextResponse.json({ error: "rate-limit" }, { status: 429 });
 
-  const form = await request.formData();
+  let form: FormData;
+  try {
+    form = await request.formData();
+  } catch {
+    return NextResponse.json({ error: "invalid-form" }, { status: 400 });
+  }
   if (value(form, "website", 200)) return NextResponse.json({ ok: true });
 
   const name = value(form, "name", 120);
