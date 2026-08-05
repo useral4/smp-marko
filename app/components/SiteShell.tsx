@@ -60,24 +60,24 @@ export function SocialLinks({ labels = false }: { labels?: boolean }) {
 }
 
 export function ProjectForm({ className = "" }: { className?: string }) {
-  const { email: contactEmail } = useContext(SiteContentContext);
-  const [prepared, setPrepared] = useState(false);
+  const [status, setStatus] = useState<"idle" | "sending" | "success" | "error">("idle");
 
-  const submit = (event: FormEvent<HTMLFormElement>) => {
+  const submit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const form = new FormData(event.currentTarget);
-    const subject = "Заявка на расчёт перекрытия МАРКО";
-    const body = [
-      `Имя: ${form.get("name") || ""}`,
-      `Телефон: ${form.get("phone") || ""}`,
-      `Город/регион: ${form.get("region") || ""}`,
-      `Тип объекта: ${form.get("objectType") || ""}`,
-      `Комментарий: ${form.get("comment") || ""}`,
-      "",
-      "План или эскиз будет приложен к письму отдельно.",
-    ].join("\n");
-    setPrepared(true);
-    window.location.href = `mailto:${contactEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    const formElement = event.currentTarget;
+    setStatus("sending");
+
+    try {
+      const response = await fetch("/api/lead", {
+        method: "POST",
+        body: new FormData(formElement),
+      });
+      if (!response.ok) throw new Error("lead-submit-failed");
+      formElement.reset();
+      setStatus("success");
+    } catch {
+      setStatus("error");
+    }
   };
 
   return <form className={`project-form ${className}`} onSubmit={submit}>
@@ -88,10 +88,12 @@ export function ProjectForm({ className = "" }: { className?: string }) {
       <label><span>Тип объекта</span><select name="objectType" required defaultValue=""><option value="" disabled>Выберите вариант</option><option>Частный дом</option><option>Многоквартирный дом</option><option>Коммерческий объект</option><option>Производственный объект</option><option>Реконструкция / капремонт</option><option>Другое</option></select></label>
     </div>
     <label><span>Комментарий</span><textarea name="comment" rows={3} placeholder="Площадь, пролёты, материал стен и что требуется рассчитать"/></label>
-    <label className="file-field"><span><UiIcon name="upload"/> План или эскиз</span><input name="projectFile" type="file" accept=".pdf,.dwg,.jpg,.jpeg,.png"/><small>PDF, DWG, JPG или PNG. После нажатия кнопки откроется почтовая программа — приложите выбранный файл к готовому письму.</small></label>
+    <label className="file-field"><span><UiIcon name="upload"/> План или эскиз</span><input name="projectFile" type="file" accept=".pdf,.dwg,.jpg,.jpeg,.png"/><small>PDF, DWG, JPG или PNG, до 15 МБ. Файл будет приложен к заявке автоматически.</small></label>
+    <input className="lead-honeypot" name="website" tabIndex={-1} autoComplete="off" aria-hidden="true"/>
     <label className="checkbox"><input type="checkbox" required/><i><UiIcon name="check" size={14}/></i><span>Согласен на обработку персональных данных по <Link href="/privacy">политике конфиденциальности</Link></span></label>
-    <button className="button form-submit" type="submit">Подготовить письмо с заявкой <UiIcon name="arrow"/></button>
-    {prepared && <p className="form-status">Заявка подготовлена в почтовом приложении. Не забудьте приложить выбранный файл.</p>}
+    <button className="button form-submit" type="submit" disabled={status === "sending"}>{status === "sending" ? "Отправляем заявку…" : <>Отправить заявку <UiIcon name="arrow"/></>}</button>
+    {status === "success" && <p className="form-status is-success">Спасибо! Заявка отправлена. Инженер свяжется с вами.</p>}
+    {status === "error" && <p className="form-status is-error">Не удалось отправить заявку. Попробуйте ещё раз или позвоните нам.</p>}
   </form>;
 }
 
