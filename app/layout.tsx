@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import SiteShell from "./components/SiteShell";
-import { readSiteContent } from "../lib/runtime-content";
+import { readPages, readSiteContent } from "../lib/runtime-content";
 
 // Content is edited through /admin and deployed automatically.
 // Always serve the active release instead of keeping stale page HTML.
@@ -20,10 +20,10 @@ export const metadata: Metadata = {
 };
 
 export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  const siteContent = await readSiteContent();
+  const [siteContent, pages] = await Promise.all([readSiteContent(), readPages()]);
   return (
     <html lang="ru">
-      <body><SiteShell siteContent={siteContent}>{children}</SiteShell></body>
+      <body><SiteShell siteContent={siteContent} pages={pages}>{children}</SiteShell></body>
     </html>
   );
 }

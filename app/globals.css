@@ -55,3 +55,28 @@
 .lead-honeypot{position:absolute!important;left:-10000px!important;width:1px!important;height:1px!important;opacity:0!important}
 .form-status.is-error{color:#b42318}
 .form-status.is-success{color:#167647}
+/* Page constructor settings */
+.page-managed{background:var(--page-bg);color:var(--page-text,var(--ink))}
+.page-managed .hero,.page-managed .page-hero,.page-managed .detail-hero{background-color:var(--page-hero-bg);background-image:linear-gradient(var(--page-hero-overlay),var(--page-hero-overlay)),var(--page-hero-image);background-position:center,var(--page-hero-position);background-size:cover;background-repeat:no-repeat;color:var(--page-hero-text)}
+.page-managed .page-hero h1,.page-managed .detail-hero h1,.page-managed .hero h1{color:inherit}
+.page-managed .page-hero p,.page-managed .detail-hero p,.page-managed .hero-copy>p{color:color-mix(in srgb,var(--page-hero-text) 72%,transparent)}
+.page-managed .section{padding-top:var(--page-section-spacing);padding-bottom:var(--page-section-spacing)}
+.page-managed .button{background:var(--page-accent)}
+.page-managed .section-index,.page-managed h1 em,.page-managed .text-link{color:var(--page-accent)}
+.page-managed .service-card,.page-managed .mp-service-card,.page-managed .object-project-card,.page-managed .news-grid>a,.page-managed .article-grid>a,.page-managed .document-grid>a,.page-managed .contact-form{border-radius:var(--page-card-radius)}
+.scroll-story{background:var(--story-bg,#0c2029);color:var(--story-text,#fff)}
+.story-copy h2,.story-text h3{color:var(--story-text,#fff)}
+.story-text p{color:color-mix(in srgb,var(--story-text,#fff) 65%,transparent)}
+.story-visual{background:var(--story-card,#fff);border-radius:var(--story-radius,20px)}
+.story-visual:after{border-radius:var(--story-radius,20px)}
+.builder-block{background:var(--block-bg);color:var(--block-text)}
+.builder-block-inner{border:1px solid var(--block-border);border-radius:var(--block-radius);padding:clamp(32px,5vw,70px);display:grid;align-items:center;gap:7%}
+.builder-block-image-left .builder-block-inner,.builder-block-image-right .builder-block-inner{grid-template-columns:1fr 1fr}
+.builder-block-image{position:relative;min-height:360px;border-radius:max(8px,var(--block-radius));overflow:hidden;background:#eef3f4}
+.builder-block-image img{object-fit:cover}
+.builder-block-copy p{max-width:720px;font-size:15px;line-height:1.75;white-space:pre-line;color:color-mix(in srgb,var(--block-text) 72%,transparent)}
+.builder-block-copy .button{margin-top:20px}
+.builder-block-cta{text-align:center}.builder-block-cta .builder-block-copy{display:grid;justify-items:center}
+.form-honeypot{position:absolute!important;left:-9999px!important;width:1px!important;height:1px!important;overflow:hidden!important}.form-submit:disabled{opacity:.65;cursor:wait}.form-status-error{color:#a3312b}.thanks-page{min-height:100vh;padding:160px 0 90px;display:grid;align-items:center;background:linear-gradient(145deg,#edf6f7,#fff)}.thanks-card{max-width:820px;text-align:center}.thanks-card>span{width:72px;height:72px;margin:0 auto 28px;display:grid;place-items:center;border-radius:50%;background:var(--blue);color:#fff;font-size:34px}.thanks-card .eyebrow{justify-content:center}.thanks-card .eyebrow i{width:28px;height:1px;background:var(--blue)}.thanks-card h1{font-size:clamp(44px,6vw,72px)}.thanks-card>p{max-width:650px;margin:0 auto 34px;color:#617982;font-size:17px;line-height:1.7}.thanks-card>div:last-child{display:flex;justify-content:center;align-items:center;gap:28px}
+@media(max-width:900px){.builder-block-image-left .builder-block-inner,.builder-block-image-right .builder-block-inner{grid-template-columns:1fr}.builder-block-image-right .builder-block-image{grid-row:1}.builder-block-image{min-height:280px}}
+@media(max-width:600px){.thanks-card>div:last-child{align-items:stretch;flex-direction:column}.thanks-card>p{font-size:14px}}

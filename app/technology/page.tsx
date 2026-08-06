@@ -7,6 +7,7 @@ import {
   pageText,
   readPage,
 } from "../../lib/runtime-content";
+import { pageThemeStyle } from "../../lib/page-builder";
 
 export const metadata: Metadata = {
   title: "Технология перекрытий МАРКО",
@@ -49,7 +50,7 @@ export default async function TechnologyPage() {
   const systemItems = pageStrings(page, "systemItems", defaultSystemItems);
 
   return (
-    <main id="top">
+    <main id="top" className="page-managed" style={pageThemeStyle(page)}>
       <section className="page-hero">
         <div className="container">
           <div className="breadcrumbs">

@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import ObjectsMap from "./components/ObjectsMap";
-import ScrollStory from "./components/ScrollStory";
+import ScrollStory, { defaultStoryFrames } from "./components/ScrollStory";
 import { LeadButton, ProjectForm, UiIcon } from "./components/SiteShell";
 import { products } from "./data";
 import {
@@ -11,6 +11,7 @@ import {
   readProjects,
   readServices,
 } from "../lib/runtime-content";
+import { pageThemeStyle, storyFrames } from "../lib/page-builder";
 
 export default async function Home() {
   const [newsItems, projects, services, page] = await Promise.all([
@@ -19,14 +20,21 @@ export default async function Home() {
     readServices(),
     readPage("home"),
   ]);
-  return <main id="top">
+  return <main id="top" className="page-managed" style={pageThemeStyle(page)}>
     <section className="hero multi-hero"><div className="hero-grid"/><div className="container hero-inner"><div className="hero-copy reveal"><div className="eyebrow"><span/>{pageText(page,"eyebrow","Москва · Санкт-Петербург · регионы")}</div><h1>{pageText(page,"heading","Сборно-монолитные перекрытия")}<br/><em>{pageText(page,"accent","МАРКО")}</em></h1><p>{pageText(page,"lead","Проектирование, производство и монтаж перекрытий для нового строительства, реконструкции и капитального ремонта.")}</p><div className="hero-buttons"><LeadButton>{pageText(page,"buttonText","Отправить план и получить расчёт за 1 день")} <UiIcon name="arrow"/></LeadButton></div><div className="hero-file-note"><UiIcon name="upload" size={17}/><span>{pageText(page,"fileNote","Принимаем PDF, DWG, фото плана или эскиз")}</span></div></div><div className="hero-visual hero-archive-visual reveal delay-1"><div className="visual-orbit orbit-one"/><div className="visual-orbit orbit-two"/><Image src="/archive/marko-house-transparent.png" alt="Модель дома с перекрытиями МАРКО" fill priority sizes="(max-width:900px) 100vw,52vw"/><div className="visual-note note-one"><b>до 9,25 м</b><span>типовой максимальный пролёт</span></div><div className="visual-note note-two"><b>без крана</b><span>ручной монтаж</span></div></div></div><div className="container hero-stats"><div><strong>1 день</strong><span>срок предварительного расчёта</span></div><div><strong>2 000+</strong><span>реализованных проектов</span></div><div><strong>400 кг/м²</strong><span>типовая нагрузка от</span></div><div><strong>100 лет</strong><span>расчётный срок службы</span></div></div></section>
 
     <section className="section home-intro"><div className="container section-grid"><div><div className="section-index">01 — Возможности</div><h2>{pageText(page,"introHeading","Полный цикл работ — в одной компании")}</h2></div><div className="intro-content"><p className="lead">{pageText(page,"introText","Не просто поставляем материалы: рассчитываем конструкцию, производим комплект и отвечаем за результат монтажа.")}</p><div className="link-stack"><Link href="/services">Все услуги <UiIcon name="arrow"/></Link><Link href="/reconstruction">Реконструкция и замена перекрытий <UiIcon name="arrow"/></Link><Link href="/designers">Материалы для проектировщиков <UiIcon name="arrow"/></Link></div></div></div></section>
 
     <section className="section home-services"><div className="container"><div className="section-head"><div><div className="section-index light">02 — Услуги</div><h2>{pageText(page,"servicesHeading","Решения под задачу")}</h2></div><Link className="text-link light-link" href="/services">Смотреть все <UiIcon name="arrow"/></Link></div><div className="service-grid">{services.slice(0,3).map((service,index)=><Link className="service-card" href={`/services/${service.slug}`} key={service.slug}><div className="service-image"><Image src={service.image} alt={service.title} fill sizes="33vw"/></div><div className="service-content"><span>0{index+1}</span><h3>{service.title}</h3><p>{service.short}</p><i><UiIcon name="arrow"/></i></div></Link>)}</div></div></section>
 
-    <ScrollStory/>
+    <ScrollStory
+      title={pageText(page,"storyHeading","Монтаж по этапам")}
+      frames={storyFrames(page,defaultStoryFrames)}
+      background={pageText(page,"storyBackground","#0b222c")}
+      textColor={pageText(page,"storyTextColor","#ffffff")}
+      cardBackground={pageText(page,"storyCardBackground","#ffffff")}
+      cardRadius={Number(page?.storyCardRadius) || 18}
+    />
 
     <section className="section home-products"><div className="container"><div className="section-head"><div><div className="section-index">03 — Сравнение систем</div><h2>{pageText(page,"productsHeading","Четыре типа перекрытий")}</h2></div><p>{pageText(page,"productsText","Цена указана за базовый комплект материалов. Монтаж, доставка и окончательная комплектация рассчитываются по проекту.")}</p></div><div className="comparison-wrap"><table className="product-comparison"><thead><tr><th>Система</th><th>Толщина</th><th>Пролёт</th><th>Нагрузка</th><th>Вес</th><th>Цена от</th></tr></thead><tbody>{products.map((product)=><tr key={product.name}><th><span>{product.name.replace("МАРКО-ГАЗОБЕТОН ","")}</span><small>{product.scenario}</small></th><td>{product.thickness}</td><td>{product.span}</td><td>{product.capacity}</td><td>{product.weight}</td><td><b>{product.price}</b></td></tr>)}</tbody></table></div><div className="comparison-note"><span>В базовый комплект входят несущие балки, газобетонные блоки и спецификация материалов.</span><Link className="text-link" href="/prices">Подробные характеристики <UiIcon name="arrow"/></Link></div></div></section>
 

@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { UiIcon } from "../components/SiteShell";
 import { pageText, readPage, readServices } from "../../lib/runtime-content";
+import { pageThemeStyle } from "../../lib/page-builder";
 
 export const metadata: Metadata = {
   title: "Услуги — СМП МАРКО Москва",
@@ -17,7 +18,7 @@ export default async function ServicesPage() {
   ]);
 
   return (
-    <main id="top">
+    <main id="top" className="page-managed" style={pageThemeStyle(page)}>
       <section className="page-hero">
         <div className="container">
           <div className="breadcrumbs">

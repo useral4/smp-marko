@@ -219,8 +219,8 @@ export async function saveUpload(input: {
   if (hostedWithoutStorage) {
     throw new Error("Загрузка фотографий ещё подключается.");
   }
-  if (!["objects", "services"].includes(input.type)) {
-    throw new Error("Загрузка файлов разрешена только для объектов и услуг");
+  if (!["objects", "services", "pages"].includes(input.type)) {
+    throw new Error("Загрузка файлов разрешена только для объектов, услуг и страниц");
   }
   const slug = safeSlug(input.slug);
   const extension = path.extname(input.name).toLowerCase();
@@ -246,5 +246,5 @@ export async function saveUpload(input: {
     await fs.mkdir(path.dirname(target), { recursive: true });
     await fs.writeFile(target, input.bytes);
   }
-  return `/uploads/objects/${slug}/${filename}`;
+  return `/uploads/${input.type}/${slug}/${filename}`;
 }

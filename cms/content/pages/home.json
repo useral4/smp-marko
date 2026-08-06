@@ -20,5 +20,28 @@
   "formText": "Инженеру достаточно PDF, DWG, фотографии плана или эскиза с размерами. Предварительную оценку дадим в течение часа, подробный расчёт — до одного рабочего дня.",
   "newsHeading": "Проекты и жизнь компании",
   "ctaHeading": "Отправьте план — инженер подготовит расчёт за 1 день",
-  "ctaButton": "Отправить план перекрытия"
+  "ctaButton": "Отправить план перекрытия",
+  "pageBackground": "#ffffff",
+  "heroBackground": "#edf5f6",
+  "heroTextColor": "#11232c",
+  "accentColor": "#087e9b",
+  "cardRadius": 18,
+  "sectionSpacing": 110,
+  "heroBackgroundImage": "",
+  "heroImagePosition": "center",
+  "heroOverlay": 0.82,
+  "storyHeading": "Монтаж по этапам",
+  "storyBackground": "#0b222c",
+  "storyTextColor": "#ffffff",
+  "storyCardBackground": "#ffffff",
+  "storyCardRadius": 18,
+  "storyFrames": [
+    { "title": "Подготовка стен", "text": "Формируем опорный пояс и проверяем геометрию стен перед монтажом перекрытия.", "image": "/archive/walls-ring-beam-stage.jpg" },
+    { "title": "Монтаж балок", "text": "Устанавливаем временные опоры и раскладываем несущие балки по монтажной схеме.", "image": "/archive/beams-installation-stage.jpg" },
+    { "title": "Раскладка системы", "text": "Выставляем шаг балок и подготавливаем основание под заполнение пролётов.", "image": "/archive/beam-layout-stage.jpg" },
+    { "title": "Укладка блоков", "text": "Заполняем пространство между балками лёгкими газобетонными блоками.", "image": "/archive/blocks-on-beams-detail.jpg" },
+    { "title": "Армирование", "text": "Укладываем арматурную сетку и усиливаем проёмы, края и опорные участки.", "image": "/archive/mesh-installation-stage.jpg" },
+    { "title": "Бетонирование", "text": "После бетонирования элементы работают вместе как единое сборно-монолитное перекрытие.", "image": "/archive/marko-slab-section-a.jpg" }
+  ],
+  "customBlocks": []
 }

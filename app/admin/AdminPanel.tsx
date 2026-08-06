@@ -18,6 +18,7 @@ type SectionKey =
   | "articles"
   | "news"
   | "documents"
+  | "leads"
   | "site";
 
 const sections: Array<{
@@ -32,6 +33,7 @@ const sections: Array<{
   { key: "articles", title: "Статьи" },
   { key: "news", title: "Новости" },
   { key: "documents", title: "Технические документы" },
+  { key: "leads", title: "Заявки с сайта", fixed: true },
   { key: "site", title: "Контакты и ссылки", single: true },
 ];
 
@@ -98,6 +100,7 @@ const emptyData: Record<SectionKey, ContentData> = {
     note: "",
     href: "",
   },
+  leads: {},
   site: { phones: [], email: "", address: "", contactMap: "", socials: [] },
 };
 
@@ -112,6 +115,11 @@ function checked(value: unknown) {
 }
 function strings(value: unknown) {
   return Array.isArray(value) ? value.map(String) : [];
+}
+function records(value: unknown) {
+  return Array.isArray(value)
+    ? value.filter((item): item is ContentData => Boolean(item) && typeof item === "object")
+    : [];
 }
 function clone<T>(value: T): T {
   return JSON.parse(JSON.stringify(value)) as T;
@@ -319,6 +327,50 @@ const pageFieldSchemas: Record<string, PageFieldSpec[]> = {
   ],
 };
 
+function ColorField({ label, value, onChange }: { label: string; value: string; onChange: (value: string) => void }) {
+  const safe = /^#[0-9a-f]{6}$/i.test(value) ? value : "#ffffff";
+  return <label className="admin-field admin-color-field"><span>{label}</span><div><input type="color" value={safe} onChange={(event) => onChange(event.target.value)} /><input value={value} onChange={(event) => onChange(event.target.value)} /></div></label>;
+}
+
+function ImageUpload({ label, value, slug, onChange }: { label: string; value: string; slug: string; onChange: (value: string) => void }) {
+  const [uploading, setUploading] = useState(false);
+  const upload = async (file: File) => {
+    setUploading(true);
+    try {
+      const form = new FormData();
+      form.set("type", "pages");
+      form.set("slug", slug);
+      form.set("file", file);
+      const result = await jsonRequest<{ path: string }>("/api/admin/upload", { method: "POST", body: form });
+      onChange(result.path);
+    } finally { setUploading(false); }
+  };
+  return <div className="admin-upload-box admin-builder-upload"><div><b>{label}</b><span>{value || "Изображение не выбрано"}</span></div><div>{value && <button type="button" className="admin-link-button" onClick={() => onChange("")}>Убрать</button>}<label className="admin-secondary-button">{uploading ? "Загрузка…" : "Загрузить"}<input hidden type="file" accept=".jpg,.jpeg,.png,.webp" disabled={uploading} onChange={(event) => { const file=event.target.files?.[0]; if(file) void upload(file); }} /></label></div></div>;
+}
+
+function StoryEditor({ data, set, slug }: { data: ContentData; set: (key: string, value: unknown) => void; slug: string }) {
+  const frames = records(data.storyFrames);
+  const update = (index: number, key: string, value: unknown) => set("storyFrames", frames.map((frame, itemIndex) => itemIndex === index ? { ...frame, [key]: value } : frame));
+  return <>
+    <div className="admin-form-grid">
+      <Field label="Заголовок блока" value={text(data.storyHeading)} onChange={(value) => set("storyHeading", value)} />
+      <Field label="Скругление карточки" value={number(data.storyCardRadius) || 18} type="number" onChange={(value) => set("storyCardRadius", Number(value))} />
+      <ColorField label="Фон блока" value={text(data.storyBackground) || "#0b222c"} onChange={(value) => set("storyBackground", value)} />
+      <ColorField label="Цвет текста" value={text(data.storyTextColor) || "#ffffff"} onChange={(value) => set("storyTextColor", value)} />
+      <ColorField label="Фон карточки с фото" value={text(data.storyCardBackground) || "#ffffff"} onChange={(value) => set("storyCardBackground", value)} />
+    </div>
+    <div className="admin-subhead"><div><b>Этапы монтажа</b><span>Меняйте текст, фотографии и порядок этапов.</span></div><button type="button" className="admin-secondary-button" onClick={() => set("storyFrames", [...frames, { title:"Новый этап", text:"Описание этапа", image:"" }])}>Добавить этап</button></div>
+    {frames.map((frame,index)=><div className="admin-nested-card" key={String(frame.id || index)}><div className="admin-nested-head"><b>{String(index+1).padStart(2,"0")} · {text(frame.title) || "Без названия"}</b><div><button type="button" disabled={index===0} onClick={() => { const next=[...frames]; [next[index-1],next[index]]=[next[index],next[index-1]]; set("storyFrames",next); }}>↑</button><button type="button" disabled={index===frames.length-1} onClick={() => { const next=[...frames]; [next[index+1],next[index]]=[next[index],next[index+1]]; set("storyFrames",next); }}>↓</button><button type="button" onClick={() => set("storyFrames",frames.filter((_,itemIndex)=>itemIndex!==index))}>Удалить</button></div></div><div className="admin-form-grid"><Field label="Название этапа" value={text(frame.title)} onChange={(value)=>update(index,"title",value)} /><Field label="Описание" value={text(frame.text)} multiline onChange={(value)=>update(index,"text",value)} /></div><ImageUpload label="Фотография этапа" value={text(frame.image)} slug={slug} onChange={(value)=>update(index,"image",value)} /></div>)}
+  </>;
+}
+
+function BlocksEditor({ data, set, slug }: { data: ContentData; set: (key: string, value: unknown) => void; slug: string }) {
+  const blocks = records(data.customBlocks);
+  const update = (index:number,key:string,value:unknown) => set("customBlocks",blocks.map((block,itemIndex)=>itemIndex===index?{...block,[key]:value}:block));
+  const add = () => set("customBlocks",[...blocks,{id:`block-${Date.now()}`,type:"text",eyebrow:"Новый раздел",heading:"Заголовок блока",text:"Добавьте текст блока.",image:"",buttonText:"",buttonHref:"",background:"#ffffff",textColor:"#11232c",borderColor:"#dbe3e5",radius:18}]);
+  return <><div className="admin-subhead"><div><b>Дополнительные блоки</b><span>Добавляются внизу выбранной страницы. Блоки можно переставлять.</span></div><button type="button" className="admin-primary-button" onClick={add}>Добавить блок</button></div>{blocks.length===0&&<div className="admin-empty admin-empty-compact">Дополнительных блоков пока нет.</div>}{blocks.map((block,index)=><div className="admin-nested-card" key={text(block.id)||index}><div className="admin-nested-head"><b>{String(index+1).padStart(2,"0")} · {text(block.heading)||"Без названия"}</b><div><button type="button" disabled={index===0} onClick={()=>{const next=[...blocks];[next[index-1],next[index]]=[next[index],next[index-1]];set("customBlocks",next)}}>↑</button><button type="button" disabled={index===blocks.length-1} onClick={()=>{const next=[...blocks];[next[index+1],next[index]]=[next[index],next[index+1]];set("customBlocks",next)}}>↓</button><button type="button" onClick={()=>set("customBlocks",blocks.filter((_,itemIndex)=>itemIndex!==index))}>Удалить</button></div></div><div className="admin-form-grid"><label className="admin-field"><span>Макет</span><select value={text(block.type)||"text"} onChange={(event)=>update(index,"type",event.target.value)}><option value="text">Текст</option><option value="image-left">Фото слева</option><option value="image-right">Фото справа</option><option value="cta">Призыв к действию</option></select></label><Field label="Надзаголовок" value={text(block.eyebrow)} onChange={(value)=>update(index,"eyebrow",value)} /><Field label="Заголовок" value={text(block.heading)} onChange={(value)=>update(index,"heading",value)} /><Field label="Текст" value={text(block.text)} multiline onChange={(value)=>update(index,"text",value)} /><Field label="Текст кнопки" value={text(block.buttonText)} onChange={(value)=>update(index,"buttonText",value)} /><Field label="Ссылка кнопки" value={text(block.buttonHref)} onChange={(value)=>update(index,"buttonHref",value)} /></div>{text(block.type).startsWith("image")&&<ImageUpload label="Изображение блока" value={text(block.image)} slug={slug} onChange={(value)=>update(index,"image",value)} />}<div className="admin-form-grid"><ColorField label="Фон" value={text(block.background)||"#ffffff"} onChange={(value)=>update(index,"background",value)} /><ColorField label="Цвет текста" value={text(block.textColor)||"#11232c"} onChange={(value)=>update(index,"textColor",value)} /><ColorField label="Цвет рамки" value={text(block.borderColor)||"#dbe3e5"} onChange={(value)=>update(index,"borderColor",value)} /><Field label="Скругление" value={number(block.radius)} type="number" onChange={(value)=>update(index,"radius",Number(value))} /></div></div>)}</>;
+}
+
 function PageFields({
   data,
   set,
@@ -328,25 +380,27 @@ function PageFields({
   set: (key: string, value: unknown) => void;
   slug: string;
 }) {
+  const [tab, setTab] = useState<"content"|"design"|"story"|"blocks">("content");
+  const [previewVersion, setPreviewVersion] = useState(0);
   const route = text(data.route);
   const schema = pageFieldSchemas[slug] || [
     { key: "heading", label: "Заголовок страницы" },
     { key: "lead", label: "Вводный текст", multiline: true },
   ];
   return (
-    <>
-      <div className="admin-upload-box">
+    <div className="admin-page-builder">
+      <div className="admin-builder-workspace">
+      <div className="admin-upload-box admin-builder-bar">
         <div>
           <b>Страница на сайте</b>
           <span>{route || "Адрес не указан"}</span>
         </div>
         {route && (
-          <a className="admin-secondary-button" href={route} target="_blank">
-            Открыть страницу ↗
-          </a>
+          <button type="button" className="admin-secondary-button" onClick={()=>setPreviewVersion(Date.now())}>Обновить предпросмотр</button>
         )}
       </div>
-      <div className="admin-form-grid">
+      <div className="admin-builder-tabs"><button type="button" className={tab==="content"?"active":""} onClick={()=>setTab("content")}>Текст</button><button type="button" className={tab==="design"?"active":""} onClick={()=>setTab("design")}>Оформление</button>{slug==="home"&&<button type="button" className={tab==="story"?"active":""} onClick={()=>setTab("story")}>Монтаж по этапам</button>}<button type="button" className={tab==="blocks"?"active":""} onClick={()=>setTab("blocks")}>Блоки</button></div>
+      {tab==="content"&&<><div className="admin-form-grid">
         <Field label="Название в админке" value={text(data.title)} onChange={(v) => set("title", v)} />
         <Field label="Порядок в списке" value={number(data.order)} onChange={(v) => set("order", Number(v))} type="number" />
         {schema.map((field) =>
@@ -367,9 +421,13 @@ function PageFields({
             />
           ),
         )}
+      </div><Toggle label="Показывать страницу на сайте" value={checked(data.published)} onChange={(v) => set("published", v)} /></>}
+      {tab==="design"&&<><div className="admin-form-grid"><ColorField label="Фон страницы" value={text(data.pageBackground)||"#ffffff"} onChange={(v)=>set("pageBackground",v)} /><ColorField label="Фон первого экрана" value={text(data.heroBackground)||"#edf5f6"} onChange={(v)=>set("heroBackground",v)} /><ColorField label="Цвет текста первого экрана" value={text(data.heroTextColor)||"#11232c"} onChange={(v)=>set("heroTextColor",v)} /><ColorField label="Акцентный цвет" value={text(data.accentColor)||"#087e9b"} onChange={(v)=>set("accentColor",v)} /><Field label="Скругление карточек, px" value={number(data.cardRadius)||18} type="number" onChange={(v)=>set("cardRadius",Number(v))} /><Field label="Отступы секций, px" value={number(data.sectionSpacing)||110} type="number" onChange={(v)=>set("sectionSpacing",Number(v))} /><Field label="Затемнение фонового фото, 0–1" value={typeof data.heroOverlay==="number"?data.heroOverlay:0.82} type="number" onChange={(v)=>set("heroOverlay",Number(v))} /><label className="admin-field"><span>Положение фонового фото</span><select value={text(data.heroImagePosition)||"center"} onChange={(e)=>set("heroImagePosition",e.target.value)}><option value="center">По центру</option><option value="left center">Слева</option><option value="right center">Справа</option><option value="center top">Сверху</option><option value="center bottom">Снизу</option></select></label></div><ImageUpload label="Фоновое изображение первого экрана" value={text(data.heroBackgroundImage)} slug={slug} onChange={(v)=>set("heroBackgroundImage",v)} /></>}
+      {tab==="story"&&slug==="home"&&<StoryEditor data={data} set={set} slug={slug} />}
+      {tab==="blocks"&&<BlocksEditor data={data} set={set} slug={slug} />}
       </div>
-      <Toggle label="Показывать страницу на сайте" value={checked(data.published)} onChange={(v) => set("published", v)} />
-    </>
+      {route&&<aside className="admin-builder-preview"><div><b>Предпросмотр</b><span>После сохранения нажмите «Обновить предпросмотр».</span><a href={route} target="_blank">Открыть в новой вкладке ↗</a></div><iframe key={previewVersion} src={`${route}?admin-preview=${previewVersion}`} title={`Предпросмотр ${text(data.title)}`} /></aside>}
+    </div>
   );
 }
 
@@ -704,6 +762,10 @@ function SiteFields({
   );
 }
 
+function LeadsList({ items }: { items: Item[] }) {
+  return <section className="admin-leads">{items.length===0?<div className="admin-empty"><b>Заявок пока нет</b><span>Новые заявки появятся здесь сразу после отправки формы.</span></div>:items.map((item)=>{const lead=item.data;const date=new Date(text(lead.createdAt));return <article className="admin-lead-card" key={item.slug}><div className="admin-lead-head"><div><span>{Number.isNaN(date.getTime())?text(lead.createdAt):date.toLocaleString("ru-RU")}</span><h2>{text(lead.name)}</h2></div><strong className={`admin-mail-status admin-mail-${text(lead.emailStatus)}`}>{text(lead.emailStatus)==="sent"?"Отправлено на почту":text(lead.emailStatus)==="failed"?"Ошибка почты":"Сохранено в админке"}</strong></div><div className="admin-lead-grid"><div><small>Телефон</small><a href={`tel:${text(lead.phone)}`}>{text(lead.phone)}</a></div><div><small>Город / регион</small><b>{text(lead.region)}</b></div><div><small>Тип объекта</small><b>{text(lead.objectType)}</b></div><div><small>Страница</small><b>{text(lead.page)}</b></div></div>{text(lead.comment)&&<div className="admin-lead-comment"><small>Комментарий</small><p>{text(lead.comment)}</p></div>}{text(lead.fileName)&&<a className="admin-secondary-button" href={`/api/admin/leads/${item.slug}/file`}>Скачать файл · {text(lead.fileName)}</a>}{text(lead.emailError)&&<p className="admin-lead-error">Почта: {text(lead.emailError)}</p>}</article>})}</section>;
+}
+
 function Login({
   configured,
   onSuccess,
@@ -796,7 +858,7 @@ export default function AdminPanel() {
     setNotice("");
     try {
       const result = await jsonRequest<{ items: Item[] }>(
-        `/api/admin/content?type=${nextSection}`,
+        nextSection === "leads" ? "/api/admin/leads" : `/api/admin/content?type=${nextSection}`,
       );
       const ordered = result.items.sort(
         (a, b) => number(a.data.order) - number(b.data.order),
@@ -946,6 +1008,8 @@ export default function AdminPanel() {
 
         {loading ? (
           <div className="admin-empty">Загружаем данные…</div>
+        ) : section === "leads" ? (
+          <LeadsList items={items} />
         ) : selected ? (
           <section className="admin-editor">
             <div className="admin-editor-head">

@@ -6,6 +6,7 @@ import {
   readDocuments,
   readPage,
 } from "../../lib/runtime-content";
+import { pageThemeStyle } from "../../lib/page-builder";
 
 export const metadata: Metadata = {
   title: "Проектировщикам и конструкторам — СМП МАРКО",
@@ -20,7 +21,7 @@ export default async function DesignersPage() {
   ]);
 
   return (
-    <main id="top">
+    <main id="top" className="page-managed" style={pageThemeStyle(page)}>
       <section className="page-hero designers-hero">
         <div className="container">
           <div className="breadcrumbs">

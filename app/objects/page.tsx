@@ -23,14 +23,6 @@ export default async function ObjectsPage() {
       </div>
     </section>
 
-    <section className="objects-map-section map-page-section">
-      <div className="container map-heading">
-        <div><h2>География работ</h2></div>
-        <p>Приближайте карту и открывайте метки объектов.</p>
-      </div>
-      <div className="map-frame"><ObjectsMap projects={cmsProjects} /></div>
-    </section>
-
     <section className="section object-projects">
       <div className="container">
         <div className="section-head">
@@ -61,6 +53,14 @@ export default async function ObjectsPage() {
           </a>)}
         </div>
       </div>
+    </section>
+
+    <section className="objects-map-section map-page-section">
+      <div className="container map-heading">
+        <div><h2>География работ</h2></div>
+        <p>Приближайте карту и открывайте метки объектов.</p>
+      </div>
+      <div className="map-frame"><ObjectsMap projects={cmsProjects} /></div>
     </section>
 
     <section className="section compact-cta">

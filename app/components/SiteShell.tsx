@@ -2,9 +2,12 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { createContext, FormEvent, useContext, useEffect, useState } from "react";
 import type { CmsPhone, CmsSocial } from "../generated-content";
+import type { CmsPage } from "../../lib/runtime-content";
+import { pageBlocks, pageThemeStyle } from "../../lib/page-builder";
+import PageBlocks from "./PageBlocks";
 
 export type SiteShellContent = {
   phones: CmsPhone[];
@@ -60,24 +63,22 @@ export function SocialLinks({ labels = false }: { labels?: boolean }) {
 }
 
 export function ProjectForm({ className = "" }: { className?: string }) {
-  const [status, setStatus] = useState<"idle" | "sending" | "success" | "error">("idle");
+  const router = useRouter();
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState("");
 
   const submit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const formElement = event.currentTarget;
-    setStatus("sending");
-
-    try {
-      const response = await fetch("/api/lead", {
-        method: "POST",
-        body: new FormData(formElement),
-      });
-      if (!response.ok) throw new Error("lead-submit-failed");
-      formElement.reset();
-      setStatus("success");
-    } catch {
-      setStatus("error");
-    }
+    const form = new FormData(event.currentTarget);
+    const file=form.get("projectFile");
+    if(file instanceof File&&file.size>15*1024*1024){setError("Файл больше 15 МБ");return}
+    setSubmitting(true);setError("");
+    try{
+      const response=await fetch("/api/leads",{method:"POST",body:form});
+      const result=await response.json() as {ok?:boolean;error?:string};
+      if(!response.ok||!result.ok)throw new Error(result.error||"Не удалось отправить заявку");
+      router.push("/thanks");
+    }catch(nextError){setError(nextError instanceof Error?nextError.message:"Не удалось отправить заявку");setSubmitting(false)}
   };
 
   return <form className={`project-form ${className}`} onSubmit={submit}>
@@ -88,12 +89,11 @@ export function ProjectForm({ className = "" }: { className?: string }) {
       <label><span>Тип объекта</span><select name="objectType" required defaultValue=""><option value="" disabled>Выберите вариант</option><option>Частный дом</option><option>Многоквартирный дом</option><option>Коммерческий объект</option><option>Производственный объект</option><option>Реконструкция / капремонт</option><option>Другое</option></select></label>
     </div>
     <label><span>Комментарий</span><textarea name="comment" rows={3} placeholder="Площадь, пролёты, материал стен и что требуется рассчитать"/></label>
-    <label className="file-field"><span><UiIcon name="upload"/> План или эскиз</span><input name="projectFile" type="file" accept=".pdf,.dwg,.jpg,.jpeg,.png"/><small>PDF, DWG, JPG или PNG, до 15 МБ. Файл будет приложен к заявке автоматически.</small></label>
-    <input className="lead-honeypot" name="website" tabIndex={-1} autoComplete="off" aria-hidden="true"/>
+    <label className="form-honeypot" aria-hidden="true"><span>Сайт компании</span><input name="companyWebsite" tabIndex={-1} autoComplete="off"/></label>
+    <label className="file-field"><span><UiIcon name="upload"/> План или эскиз</span><input name="projectFile" type="file" accept=".pdf,.dwg,.jpg,.jpeg,.png,.webp"/><small>PDF, DWG, JPG, PNG или WEBP, до 15 МБ. Файл отправится вместе с заявкой.</small></label>
     <label className="checkbox"><input type="checkbox" required/><i><UiIcon name="check" size={14}/></i><span>Согласен на обработку персональных данных по <Link href="/privacy">политике конфиденциальности</Link></span></label>
-    <button className="button form-submit" type="submit" disabled={status === "sending"}>{status === "sending" ? "Отправляем заявку…" : <>Отправить заявку <UiIcon name="arrow"/></>}</button>
-    {status === "success" && <p className="form-status is-success">Спасибо! Заявка отправлена. Инженер свяжется с вами.</p>}
-    {status === "error" && <p className="form-status is-error">Не удалось отправить заявку. Попробуйте ещё раз или позвоните нам.</p>}
+    <button className="button form-submit" type="submit" disabled={submitting}>{submitting?"Отправляем…":"Отправить заявку"} <UiIcon name="arrow"/></button>
+    {error && <p className="form-status form-status-error">{error}</p>}
   </form>;
 }
 
@@ -110,9 +110,11 @@ function MessengerDock() {
 export default function SiteShell({
   children,
   siteContent,
+  pages,
 }: {
   children: React.ReactNode;
   siteContent: SiteShellContent;
+  pages: CmsPage[];
 }) {
   const pathname = usePathname();
   const [menu, setMenu] = useState(false);
@@ -126,6 +128,7 @@ export default function SiteShell({
   } = siteContent;
   const phoneDisplay = phones[0]?.display ?? "";
   const phoneHref = phones[0]?.href ?? "";
+  const activePage = pages.find((page) => page.route === pathname) || null;
 
   useEffect(() => { setCookie(localStorage.getItem("marko-cookie") !== "accepted"); }, []);
 
@@ -140,7 +143,10 @@ export default function SiteShell({
   return <SiteContentContext.Provider value={siteContent}><LeadContext.Provider value={() => setLead(true)}><>
     <header className="header"><div className="container header-inner"><Logo/><nav className="desktop-nav">{links.map(([title,href])=><Link key={href} href={href}>{title}</Link>)}</nav><div className="header-actions"><a className="header-phone" href={phoneHref}><UiIcon name="phone" size={17}/><span>{phoneDisplay}</span></a><LeadButton className="button button-small"/><button className="burger" onClick={()=>setMenu(true)} aria-label="Открыть меню"><UiIcon name="menu" size={24}/></button></div></div></header>
     <div className={`mobile-menu ${menu ? "is-open" : ""}`}><div className="mobile-menu-head"><Logo/><button onClick={()=>setMenu(false)} aria-label="Закрыть меню"><UiIcon name="close"/></button></div><nav>{links.map(([title,href],index)=><Link onClick={()=>setMenu(false)} key={href} href={href}>{title}<span>{String(index + 1).padStart(2,"0")}</span></Link>)}</nav><div className="mobile-menu-bottom"><div className="mobile-phones">{phones.map((phone)=><a key={phone.href} href={phone.href}>{phone.display}</a>)}</div><LeadButton>Отправить план</LeadButton></div></div>
-    {children}
+    <div className={activePage ? "page-managed" : undefined} style={activePage ? pageThemeStyle(activePage) : undefined}>
+      {children}
+      <PageBlocks blocks={pageBlocks(activePage)}/>
+    </div>
     <footer><div className="container footer-main"><div><Link href="/" className="footer-construction-logo"><Image src="/marko-construction.jpg" alt="MARKO CONSTRUCTION" width={1900} height={920}/></Link><p>Сборно-монолитные перекрытия для нового строительства, реконструкции и капитального ремонта.</p></div><div className="footer-nav"><b>Разделы</b>{links.map(([title,href])=><Link key={href} href={href}>{title}</Link>)}<Link href="/designers">Проектировщикам</Link><Link href="/about">О компании</Link></div><div><b>Связаться</b>{phones.map((phone)=><a className="footer-phone" key={phone.href} href={phone.href}>{phone.display}<small>{phone.city}</small></a>)}<a href={`mailto:${contactEmail}`}>{contactEmail}</a><p className="footer-address">{contactAddress}</p><SocialLinks/></div></div><div className="container footer-bottom"><span>© 2026 СМП МАРКО</span><Link href="/privacy">Политика конфиденциальности</Link><a href="#top">Наверх ↑</a></div></footer>
     <MessengerDock/>
     {cookie&&<div className="cookie"><div><b>Мы используем cookie</b><p>Они помогают сайту работать корректно.</p></div><button onClick={()=>{localStorage.setItem("marko-cookie","accepted");setCookie(false)}}>Хорошо</button><button className="cookie-close" onClick={()=>setCookie(false)} aria-label="Закрыть"><UiIcon name="close" size={18}/></button></div>}
