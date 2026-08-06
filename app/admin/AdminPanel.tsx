@@ -852,7 +852,7 @@ export default function AdminPanel() {
     void checkSession();
   }, []);
 
-  const load = async (nextSection = section) => {
+  const load = async (nextSection = section, keepSlug = "") => {
     setLoading(true);
     setError("");
     setNotice("");
@@ -868,6 +868,10 @@ export default function AdminPanel() {
         const item = ordered[0] || { slug: "index", data: clone(emptyData.site) };
         setSelected(clone(item));
         setPreviousSlug(item.slug);
+      } else if (keepSlug) {
+        const item = ordered.find((entry) => entry.slug === keepSlug);
+        setSelected(item ? clone(item) : null);
+        setPreviousSlug(item?.slug || "");
       } else {
         setSelected(null);
         setPreviousSlug("");
@@ -930,7 +934,7 @@ export default function AdminPanel() {
       });
       setSelected({ ...selected, slug: result.slug });
       setPreviousSlug(result.slug);
-      await load(section);
+      await load(section, result.slug);
       setNotice("Сохранено. Изменения уже доступны на сайте.");
     } catch (nextError) {
       setError(nextError instanceof Error ? nextError.message : "Не удалось сохранить");
