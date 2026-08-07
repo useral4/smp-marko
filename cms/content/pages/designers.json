@@ -16,7 +16,8 @@
     {
       "selector": "section.section.designer-basics:nth-of-type(2) > div.container > div.section-head:nth-of-type(1) > div > h2",
       "label": "Заголовок",
-      "text": "Система в проект"
+      "text": "Система в проекте",
+      "color": "#38cdff"
     }
   ]
 }
