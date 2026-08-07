@@ -16,13 +16,13 @@
     {
       "selector": "section.section.designer-basics:nth-of-type(2) > div.container > div.section-head:nth-of-type(1) > div > h2",
       "label": "Заголовок",
-      "text": "Система в проект",
-      "color": "#969696"
+      "text": "Система в проекте",
+      "color": "#000000"
     },
     {
       "selector": "section.section.designer-basics:nth-of-type(2)",
       "label": "Секция · section · designer-basics",
-      "background": "#c2c2c2"
+      "background": "#ffffff"
     }
   ]
 }
