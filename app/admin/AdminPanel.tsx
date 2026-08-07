@@ -1,6 +1,7 @@
 "use client";
 
-import { FormEvent, useEffect, useMemo, useState } from "react";
+import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
+import { applyVisualOverride, type VisualOverride } from "../components/PageVisualOverrides";
 
 type Section = {
   title: string;
@@ -371,6 +372,199 @@ function BlocksEditor({ data, set, slug }: { data: ContentData; set: (key: strin
   return <><div className="admin-subhead"><div><b>Дополнительные блоки</b><span>Добавляются внизу выбранной страницы. Блоки можно переставлять.</span></div><button type="button" className="admin-primary-button" onClick={add}>Добавить блок</button></div>{blocks.length===0&&<div className="admin-empty admin-empty-compact">Дополнительных блоков пока нет.</div>}{blocks.map((block,index)=><div className="admin-nested-card" key={text(block.id)||index}><div className="admin-nested-head"><b>{String(index+1).padStart(2,"0")} · {text(block.heading)||"Без названия"}</b><div><button type="button" disabled={index===0} onClick={()=>{const next=[...blocks];[next[index-1],next[index]]=[next[index],next[index-1]];set("customBlocks",next)}}>↑</button><button type="button" disabled={index===blocks.length-1} onClick={()=>{const next=[...blocks];[next[index+1],next[index]]=[next[index],next[index+1]];set("customBlocks",next)}}>↓</button><button type="button" onClick={()=>set("customBlocks",blocks.filter((_,itemIndex)=>itemIndex!==index))}>Удалить</button></div></div><div className="admin-form-grid"><label className="admin-field"><span>Макет</span><select value={text(block.type)||"text"} onChange={(event)=>update(index,"type",event.target.value)}><option value="text">Текст</option><option value="image-left">Фото слева</option><option value="image-right">Фото справа</option><option value="cta">Призыв к действию</option></select></label><Field label="Надзаголовок" value={text(block.eyebrow)} onChange={(value)=>update(index,"eyebrow",value)} /><Field label="Заголовок" value={text(block.heading)} onChange={(value)=>update(index,"heading",value)} /><Field label="Текст" value={text(block.text)} multiline onChange={(value)=>update(index,"text",value)} /><Field label="Текст кнопки" value={text(block.buttonText)} onChange={(value)=>update(index,"buttonText",value)} /><Field label="Ссылка кнопки" value={text(block.buttonHref)} onChange={(value)=>update(index,"buttonHref",value)} /></div>{text(block.type).startsWith("image")&&<ImageUpload label="Изображение блока" value={text(block.image)} slug={slug} onChange={(value)=>update(index,"image",value)} />}<div className="admin-form-grid"><ColorField label="Фон" value={text(block.background)||"#ffffff"} onChange={(value)=>update(index,"background",value)} /><ColorField label="Цвет текста" value={text(block.textColor)||"#11232c"} onChange={(value)=>update(index,"textColor",value)} /><ColorField label="Цвет рамки" value={text(block.borderColor)||"#dbe3e5"} onChange={(value)=>update(index,"borderColor",value)} /><Field label="Скругление" value={number(block.radius)} type="number" onChange={(value)=>update(index,"radius",Number(value))} /></div></div>)}</>;
 }
 
+type SelectedVisualElement = {
+  selector: string;
+  label: string;
+  tag: string;
+  text: string;
+  canEditText: boolean;
+  isImage: boolean;
+  isLink: boolean;
+  background: string;
+  color: string;
+  borderColor: string;
+  borderRadius: number;
+  paddingTop: number;
+  paddingBottom: number;
+  href: string;
+  image: string;
+};
+
+function directElementText(element: HTMLElement) {
+  const direct = Array.from(element.childNodes)
+    .filter((node) => node.nodeType === 3)
+    .map((node) => node.textContent?.trim() || "")
+    .filter(Boolean)
+    .join(" ");
+  return direct || (element.children.length === 0 ? element.textContent?.trim() || "" : "");
+}
+
+function stableElementSelector(element: HTMLElement, root: HTMLElement) {
+  if (element.id) {
+    const byId = `#${CSS.escape(element.id)}`;
+    if (root.querySelectorAll(byId).length === 1) return byId;
+  }
+  const parts: string[] = [];
+  let current: HTMLElement | null = element;
+  while (current && current !== root) {
+    let part = current.tagName.toLowerCase();
+    const classes = Array.from(current.classList)
+      .filter((name) => !name.startsWith("admin-visual-") && !["active", "reveal", "delay-1"].includes(name))
+      .slice(0, 3);
+    if (classes.length) part += classes.map((name) => `.${CSS.escape(name)}`).join("");
+    const parent: HTMLElement | null = current.parentElement;
+    if (parent) {
+      const sameTag = Array.from(parent.children).filter((child) => child.tagName === current?.tagName);
+      if (sameTag.length > 1) part += `:nth-of-type(${sameTag.indexOf(current) + 1})`;
+    }
+    parts.unshift(part);
+    const selector = parts.join(" > ");
+    try {
+      if (root.querySelectorAll(selector).length === 1) return selector;
+    } catch {}
+    current = parent;
+  }
+  return parts.join(" > ");
+}
+
+function visualElementLabel(element: HTMLElement) {
+  const names: Record<string, string> = {
+    SECTION: "Секция",
+    ARTICLE: "Карточка",
+    DIV: "Блок",
+    H1: "Главный заголовок",
+    H2: "Заголовок",
+    H3: "Подзаголовок",
+    H4: "Подзаголовок",
+    P: "Текст",
+    A: "Ссылка",
+    BUTTON: "Кнопка",
+    IMG: "Изображение",
+    LI: "Пункт списка",
+    SPAN: "Надпись",
+    STRONG: "Выделенный текст",
+    SMALL: "Подпись",
+    EM: "Акцентный текст",
+    FORM: "Форма",
+  };
+  const className = Array.from(element.classList).filter((name) => !name.startsWith("admin-visual-")).slice(0, 2).join(" · ");
+  return `${names[element.tagName] || "Элемент"}${className ? ` · ${className}` : ""}`;
+}
+
+function VisualPageEditor({ data, set, slug, route }: { data: ContentData; set: (key: string, value: unknown) => void; slug: string; route: string }) {
+  const iframeRef = useRef<HTMLIFrameElement>(null);
+  const selectedRef = useRef<HTMLElement | null>(null);
+  const cleanupRef = useRef<(() => void) | null>(null);
+  const [selected, setSelected] = useState<SelectedVisualElement | null>(null);
+  const [previewVersion, setPreviewVersion] = useState(0);
+  const overrides = records(data.visualOverrides) as VisualOverride[];
+  const current = selected ? overrides.find((item) => item.selector === selected.selector) : undefined;
+
+  const applyCurrentPreview = (override: VisualOverride) => {
+    const frameRoot = iframeRef.current?.contentDocument?.querySelector<HTMLElement>("[data-managed-page]");
+    if (frameRoot) applyVisualOverride(frameRoot, override);
+  };
+
+  const update = (key: keyof VisualOverride, value: unknown) => {
+    if (!selected) return;
+    const index = overrides.findIndex((item) => item.selector === selected.selector);
+    const nextOverride = { ...(index >= 0 ? overrides[index] : { selector: selected.selector, label: selected.label }), [key]: value } as VisualOverride;
+    const next = index >= 0
+      ? overrides.map((item, itemIndex) => itemIndex === index ? nextOverride : item)
+      : [...overrides, nextOverride];
+    set("visualOverrides", next);
+    window.setTimeout(() => applyCurrentPreview(nextOverride), 0);
+  };
+
+  const prepareFrame = () => {
+    cleanupRef.current?.();
+    const document = iframeRef.current?.contentDocument;
+    const root = document?.querySelector<HTMLElement>("[data-managed-page]");
+    if (!document || !root) return;
+    document.body.classList.add("admin-visual-editing");
+    const style = document.createElement("style");
+    style.textContent = `.admin-visual-editing [data-managed-page] *{cursor:pointer!important}.admin-visual-hover{outline:2px dashed #0e8ba6!important;outline-offset:-2px}.admin-visual-selected{outline:3px solid #0e8ba6!important;outline-offset:-3px;box-shadow:0 0 0 4px rgba(14,139,166,.18)!important}`;
+    document.head.appendChild(style);
+    overrides.forEach((override) => applyVisualOverride(root, override));
+
+    const normalize = (target: EventTarget | null) => {
+      const element = target && typeof target === "object" && "nodeType" in target && (target as Node).nodeType === 1
+        ? target as HTMLElement
+        : null;
+      if (!element || !root.contains(element)) return null;
+      return element.closest<HTMLElement>("a,button,img,h1,h2,h3,h4,p,li,section,article,form,span,strong,small,em,div");
+    };
+    const over = (event: MouseEvent) => {
+      const element = normalize(event.target);
+      if (element && element !== selectedRef.current) element.classList.add("admin-visual-hover");
+    };
+    const out = (event: MouseEvent) => normalize(event.target)?.classList.remove("admin-visual-hover");
+    const click = (event: MouseEvent) => {
+      const element = normalize(event.target);
+      if (!element) return;
+      event.preventDefault();
+      event.stopPropagation();
+      selectedRef.current?.classList.remove("admin-visual-selected");
+      element.classList.remove("admin-visual-hover");
+      element.classList.add("admin-visual-selected");
+      selectedRef.current = element;
+      const view = document.defaultView;
+      const computed = view?.getComputedStyle(element);
+      const tag = element.tagName;
+      const editableTags = ["H1", "H2", "H3", "H4", "P", "A", "BUTTON", "LI", "SPAN", "STRONG", "SMALL", "EM"];
+      setSelected({
+        selector: stableElementSelector(element, root),
+        label: visualElementLabel(element),
+        tag,
+        text: directElementText(element),
+        canEditText: editableTags.includes(tag),
+        isImage: tag === "IMG",
+        isLink: tag === "A",
+        background: computed?.backgroundColor || "#ffffff",
+        color: computed?.color || "#11232c",
+        borderColor: computed?.borderColor || "#dbe3e5",
+        borderRadius: Number.parseFloat(computed?.borderRadius || "0") || 0,
+        paddingTop: Number.parseFloat(computed?.paddingTop || "0") || 0,
+        paddingBottom: Number.parseFloat(computed?.paddingBottom || "0") || 0,
+        href: tag === "A" ? element.getAttribute("href") || "" : "",
+        image: tag === "IMG" ? element.getAttribute("src") || "" : "",
+      });
+    };
+    root.addEventListener("mouseover", over, true);
+    root.addEventListener("mouseout", out, true);
+    root.addEventListener("click", click, true);
+    cleanupRef.current = () => {
+      root.removeEventListener("mouseover", over, true);
+      root.removeEventListener("mouseout", out, true);
+      root.removeEventListener("click", click, true);
+      style.remove();
+    };
+  };
+
+  useEffect(() => () => cleanupRef.current?.(), []);
+
+  return <div className="admin-visual-editor">
+    <section className="admin-visual-canvas">
+      <div className="admin-visual-toolbar">
+        <div><b>Редактируйте прямо на странице</b><span>Наведите курсор и нажмите на текст, кнопку, картинку, карточку или секцию.</span></div>
+        <div><button type="button" className="admin-secondary-button" onClick={() => { setSelected(null); selectedRef.current = null; setPreviewVersion(Date.now()); }}>Обновить</button><a className="admin-secondary-button" href={route} target="_blank">Открыть страницу ↗</a></div>
+      </div>
+      <iframe ref={iframeRef} key={previewVersion} src={`${route}?admin-preview=${previewVersion}`} title={`Визуальный редактор ${text(data.title)}`} onLoad={prepareFrame} />
+    </section>
+    <aside className="admin-visual-inspector">
+      {!selected ? <div className="admin-visual-empty"><i>↖</i><b>Выберите элемент</b><p>Кликните по нужному месту в предпросмотре. Здесь появятся его текст, цвета, отступы, изображение или ссылка.</p></div> : <>
+        <div className="admin-inspector-head"><span>Выбранный элемент</span><h3>{selected.label}</h3><small>{selected.selector}</small></div>
+        {selected.canEditText && <Field label={selected.tag === "BUTTON" ? "Текст кнопки" : selected.isLink ? "Текст ссылки" : "Текст"} value={typeof current?.text === "string" ? current.text : selected.text} multiline={selected.tag === "P"} onChange={(value) => update("text", value)} />}
+        {selected.isLink && <Field label="Адрес ссылки" value={typeof current?.href === "string" ? current.href : selected.href} hint="Например: /contacts, https://…, tel:…" onChange={(value) => update("href", value)} />}
+        {selected.isImage && <ImageUpload label="Изображение" value={typeof current?.image === "string" ? current.image : selected.image} slug={slug} onChange={(value) => update("image", value)} />}
+        <div className="admin-inspector-section"><b>Цвета элемента</b><ColorField label="Фон" value={typeof current?.background === "string" ? current.background : selected.background} onChange={(value) => update("background", value)} /><ColorField label="Цвет текста" value={typeof current?.color === "string" ? current.color : selected.color} onChange={(value) => update("color", value)} /><ColorField label="Цвет рамки" value={typeof current?.borderColor === "string" ? current.borderColor : selected.borderColor} onChange={(value) => update("borderColor", value)} /></div>
+        <div className="admin-inspector-section"><b>Размеры элемента</b><div className="admin-inspector-numbers"><Field label="Скругление, px" type="number" value={typeof current?.borderRadius === "number" ? current.borderRadius : selected.borderRadius} onChange={(value) => update("borderRadius", Number(value))} /><Field label="Отступ сверху, px" type="number" value={typeof current?.paddingTop === "number" ? current.paddingTop : selected.paddingTop} onChange={(value) => update("paddingTop", Number(value))} /><Field label="Отступ снизу, px" type="number" value={typeof current?.paddingBottom === "number" ? current.paddingBottom : selected.paddingBottom} onChange={(value) => update("paddingBottom", Number(value))} /></div></div>
+        {current && <button type="button" className="admin-reset-element" onClick={() => { set("visualOverrides", overrides.filter((item) => item.selector !== selected.selector)); setPreviewVersion(Date.now()); setSelected(null); selectedRef.current = null; }}>Сбросить изменения этого элемента</button>}
+      </>}
+    </aside>
+  </div>;
+}
+
 function PageFields({
   data,
   set,
@@ -380,8 +574,7 @@ function PageFields({
   set: (key: string, value: unknown) => void;
   slug: string;
 }) {
-  const [tab, setTab] = useState<"content"|"design"|"story"|"blocks">("content");
-  const [previewVersion, setPreviewVersion] = useState(0);
+  const [tab, setTab] = useState<"visual"|"content"|"design"|"story"|"blocks">("visual");
   const route = text(data.route);
   const schema = pageFieldSchemas[slug] || [
     { key: "heading", label: "Заголовок страницы" },
@@ -396,10 +589,11 @@ function PageFields({
           <span>{route || "Адрес не указан"}</span>
         </div>
         {route && (
-          <button type="button" className="admin-secondary-button" onClick={()=>setPreviewVersion(Date.now())}>Обновить предпросмотр</button>
+          <a className="admin-secondary-button" href={route} target="_blank">Открыть страницу ↗</a>
         )}
       </div>
-      <div className="admin-builder-tabs"><button type="button" className={tab==="content"?"active":""} onClick={()=>setTab("content")}>Текст</button><button type="button" className={tab==="design"?"active":""} onClick={()=>setTab("design")}>Оформление</button>{slug==="home"&&<button type="button" className={tab==="story"?"active":""} onClick={()=>setTab("story")}>Монтаж по этапам</button>}<button type="button" className={tab==="blocks"?"active":""} onClick={()=>setTab("blocks")}>Блоки</button></div>
+      <div className="admin-builder-tabs"><button type="button" className={tab==="visual"?"active":""} onClick={()=>setTab("visual")}>Визуальный редактор</button><button type="button" className={tab==="content"?"active":""} onClick={()=>setTab("content")}>Тексты страницы</button><button type="button" className={tab==="design"?"active":""} onClick={()=>setTab("design")}>Общие настройки</button>{slug==="home"&&<button type="button" className={tab==="story"?"active":""} onClick={()=>setTab("story")}>Монтаж по этапам</button>}<button type="button" className={tab==="blocks"?"active":""} onClick={()=>setTab("blocks")}>Доп. блоки</button></div>
+      {tab==="visual"&&route&&<VisualPageEditor data={data} set={set} slug={slug} route={route} />}
       {tab==="content"&&<><div className="admin-form-grid">
         <Field label="Название в админке" value={text(data.title)} onChange={(v) => set("title", v)} />
         <Field label="Порядок в списке" value={number(data.order)} onChange={(v) => set("order", Number(v))} type="number" />
@@ -426,7 +620,6 @@ function PageFields({
       {tab==="story"&&slug==="home"&&<StoryEditor data={data} set={set} slug={slug} />}
       {tab==="blocks"&&<BlocksEditor data={data} set={set} slug={slug} />}
       </div>
-      {route&&<aside className="admin-builder-preview"><div><b>Предпросмотр</b><span>После сохранения нажмите «Обновить предпросмотр».</span><a href={route} target="_blank">Открыть в новой вкладке ↗</a></div><iframe key={previewVersion} src={`${route}?admin-preview=${previewVersion}`} title={`Предпросмотр ${text(data.title)}`} /></aside>}
     </div>
   );
 }

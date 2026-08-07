@@ -6,8 +6,9 @@ import { usePathname, useRouter } from "next/navigation";
 import { createContext, FormEvent, useContext, useEffect, useState } from "react";
 import type { CmsPhone, CmsSocial } from "../generated-content";
 import type { CmsPage } from "../../lib/runtime-content";
-import { pageBlocks, pageThemeStyle } from "../../lib/page-builder";
+import { pageBlocks, pageThemeStyle, pageVisualOverrides } from "../../lib/page-builder";
 import PageBlocks from "./PageBlocks";
+import PageVisualOverrides from "./PageVisualOverrides";
 
 export type SiteShellContent = {
   phones: CmsPhone[];
@@ -143,9 +144,10 @@ export default function SiteShell({
   return <SiteContentContext.Provider value={siteContent}><LeadContext.Provider value={() => setLead(true)}><>
     <header className="header"><div className="container header-inner"><Logo/><nav className="desktop-nav">{links.map(([title,href])=><Link key={href} href={href}>{title}</Link>)}</nav><div className="header-actions"><a className="header-phone" href={phoneHref}><UiIcon name="phone" size={17}/><span>{phoneDisplay}</span></a><LeadButton className="button button-small"/><button className="burger" onClick={()=>setMenu(true)} aria-label="Открыть меню"><UiIcon name="menu" size={24}/></button></div></div></header>
     <div className={`mobile-menu ${menu ? "is-open" : ""}`}><div className="mobile-menu-head"><Logo/><button onClick={()=>setMenu(false)} aria-label="Закрыть меню"><UiIcon name="close"/></button></div><nav>{links.map(([title,href],index)=><Link onClick={()=>setMenu(false)} key={href} href={href}>{title}<span>{String(index + 1).padStart(2,"0")}</span></Link>)}</nav><div className="mobile-menu-bottom"><div className="mobile-phones">{phones.map((phone)=><a key={phone.href} href={phone.href}>{phone.display}</a>)}</div><LeadButton>Отправить план</LeadButton></div></div>
-    <div className={activePage ? "page-managed" : undefined} style={activePage ? pageThemeStyle(activePage) : undefined}>
+    <div className={activePage ? "page-managed" : undefined} data-managed-page={activePage ? activePage.slug : undefined} style={activePage ? pageThemeStyle(activePage) : undefined}>
       {children}
       <PageBlocks blocks={pageBlocks(activePage)}/>
+      {activePage && <PageVisualOverrides overrides={pageVisualOverrides(activePage)}/>}
     </div>
     <footer><div className="container footer-main"><div><Link href="/" className="footer-construction-logo"><Image src="/marko-construction.jpg" alt="MARKO CONSTRUCTION" width={1900} height={920}/></Link><p>Сборно-монолитные перекрытия для нового строительства, реконструкции и капитального ремонта.</p></div><div className="footer-nav"><b>Разделы</b>{links.map(([title,href])=><Link key={href} href={href}>{title}</Link>)}<Link href="/designers">Проектировщикам</Link><Link href="/about">О компании</Link></div><div><b>Связаться</b>{phones.map((phone)=><a className="footer-phone" key={phone.href} href={phone.href}>{phone.display}<small>{phone.city}</small></a>)}<a href={`mailto:${contactEmail}`}>{contactEmail}</a><p className="footer-address">{contactAddress}</p><SocialLinks/></div></div><div className="container footer-bottom"><span>© 2026 СМП МАРКО</span><Link href="/privacy">Политика конфиденциальности</Link><a href="#top">Наверх ↑</a></div></footer>
     <MessengerDock/>

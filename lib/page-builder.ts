@@ -1,5 +1,6 @@
 import type { CSSProperties } from "react";
 import type { CmsPage } from "./runtime-content";
+import type { VisualOverride } from "../app/components/PageVisualOverrides";
 
 export type PageBlock = {
   id: string;
@@ -81,6 +82,29 @@ export function pageBlocks(page: CmsPage | null): PageBlock[] {
       borderColor: String(block.borderColor || "#dbe3e5"),
       radius: Number(block.radius) || 0,
     };
+  });
+}
+
+export function pageVisualOverrides(page: CmsPage | null): VisualOverride[] {
+  if (!Array.isArray(page?.visualOverrides)) return [];
+  return page.visualOverrides.flatMap((entry) => {
+    if (!entry || typeof entry !== "object") return [];
+    const value = entry as Record<string, unknown>;
+    const selector = typeof value.selector === "string" ? value.selector : "";
+    if (!selector) return [];
+    const override: VisualOverride = { selector };
+    if (typeof value.label === "string") override.label = value.label;
+    if (typeof value.text === "string") override.text = value.text;
+    if (typeof value.background === "string") override.background = value.background;
+    if (typeof value.color === "string") override.color = value.color;
+    if (typeof value.borderColor === "string") override.borderColor = value.borderColor;
+    if (typeof value.href === "string") override.href = value.href;
+    if (typeof value.image === "string") override.image = value.image;
+    for (const key of ["borderRadius", "paddingTop", "paddingBottom"] as const) {
+      const number = Number(value[key]);
+      if (Number.isFinite(number)) override[key] = number;
+    }
+    return [override];
   });
 }
 
