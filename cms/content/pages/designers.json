@@ -11,5 +11,12 @@
   "documentsText": "BIM-модели, сертификаты, протоколы испытаний, альбомы решений и инструкции по монтажу.",
   "requestHeading": "Запросите альбом решений и консультацию",
   "requestText": "Передайте планы, расчётные нагрузки и материал несущих стен. Инженер поможет подобрать схему и подготовить исходные данные.",
-  "requestButton": "Связаться с техническим специалистом"
+  "requestButton": "Связаться с техническим специалистом",
+  "visualOverrides": [
+    {
+      "selector": "section.section.designer-basics:nth-of-type(2) > div.container > div.section-head:nth-of-type(1) > div > h2",
+      "label": "Заголовок",
+      "text": "Система в проект"
+    }
+  ]
 }
