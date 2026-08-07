@@ -64,6 +64,7 @@
 .page-managed .button{background:var(--page-accent)}
 .page-managed .section-index,.page-managed h1 em,.page-managed .text-link{color:var(--page-accent)}
 .page-managed .service-card,.page-managed .mp-service-card,.page-managed .object-project-card,.page-managed .news-grid>a,.page-managed .article-grid>a,.page-managed .document-grid>a,.page-managed .contact-form{border-radius:var(--page-card-radius)}
+.custom-template-copy{display:grid;justify-items:start;gap:28px}.custom-template-copy>p{margin:0;color:#60747c;font-size:17px;line-height:1.8;white-space:pre-line}
 .scroll-story{background:var(--story-bg,#0c2029);color:var(--story-text,#fff)}
 .story-copy h2,.story-text h3{color:var(--story-text,#fff)}
 .story-text p{color:color-mix(in srgb,var(--story-text,#fff) 65%,transparent)}

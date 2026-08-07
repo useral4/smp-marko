@@ -10,6 +10,7 @@ type Section = {
 };
 type Phone = { city: string; display: string; href: string };
 type Social = { name: string; href: string; icon: string };
+type NavItem = { title: string; href: string };
 type ContentData = Record<string, unknown>;
 type Item = { slug: string; data: ContentData };
 type SectionKey =
@@ -35,17 +36,34 @@ const sections: Array<{
   { key: "news", title: "Новости" },
   { key: "documents", title: "Технические документы" },
   { key: "leads", title: "Заявки с сайта", fixed: true },
-  { key: "site", title: "Контакты и ссылки", single: true },
+  { key: "site", title: "Шапка, контакты и ссылки", single: true },
+];
+
+const defaultNavigation: NavItem[] = [
+  { title: "Услуги", href: "/services" },
+  { title: "Объекты", href: "/objects" },
+  { title: "Реконструкция", href: "/reconstruction" },
+  { title: "Технология", href: "/technology" },
+  { title: "Проектировщикам", href: "/designers" },
+  { title: "Статьи", href: "/articles" },
+  { title: "Новости", href: "/news" },
+  { title: "Контакты", href: "/contacts" },
 ];
 
 const emptyData: Record<SectionKey, ContentData> = {
   pages: {
     title: "",
     route: "",
+    template: "custom",
     published: true,
     order: 100,
     heading: "",
     lead: "",
+    bodyHeading: "О странице",
+    bodyText: "Добавьте основной текст страницы.",
+    buttonText: "Получить консультацию",
+    customBlocks: [],
+    visualOverrides: [],
   },
   services: {
     title: "",
@@ -102,7 +120,7 @@ const emptyData: Record<SectionKey, ContentData> = {
     href: "",
   },
   leads: {},
-  site: { phones: [], email: "", address: "", contactMap: "", socials: [] },
+  site: { phones: [], email: "", address: "", contactMap: "", socials: [], navigation: [], headerOverrides: [] },
 };
 
 function text(value: unknown) {
@@ -400,6 +418,7 @@ function directElementText(element: HTMLElement) {
 }
 
 function stableElementSelector(element: HTMLElement, root: HTMLElement) {
+  if (element === root) return "__scope__";
   if (element.id) {
     const byId = `#${CSS.escape(element.id)}`;
     if (root.querySelectorAll(byId).length === 1) return byId;
@@ -446,22 +465,24 @@ function visualElementLabel(element: HTMLElement) {
     SMALL: "Подпись",
     EM: "Акцентный текст",
     FORM: "Форма",
+    HEADER: "Шапка сайта",
+    NAV: "Меню",
   };
   const className = Array.from(element.classList).filter((name) => !name.startsWith("admin-visual-")).slice(0, 2).join(" · ");
   return `${names[element.tagName] || "Элемент"}${className ? ` · ${className}` : ""}`;
 }
 
-function VisualPageEditor({ data, set, slug, route }: { data: ContentData; set: (key: string, value: unknown) => void; slug: string; route: string }) {
+function VisualPageEditor({ data, set, slug, route, overrideKey = "visualOverrides", scopeSelector = "[data-managed-page]", headerMode = false }: { data: ContentData; set: (key: string, value: unknown) => void; slug: string; route: string; overrideKey?: string; scopeSelector?: string; headerMode?: boolean }) {
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const selectedRef = useRef<HTMLElement | null>(null);
   const cleanupRef = useRef<(() => void) | null>(null);
   const [selected, setSelected] = useState<SelectedVisualElement | null>(null);
   const [previewVersion, setPreviewVersion] = useState(0);
-  const overrides = records(data.visualOverrides) as VisualOverride[];
+  const overrides = records(data[overrideKey]) as VisualOverride[];
   const current = selected ? overrides.find((item) => item.selector === selected.selector) : undefined;
 
   const applyCurrentPreview = (override: VisualOverride) => {
-    const frameRoot = iframeRef.current?.contentDocument?.querySelector<HTMLElement>("[data-managed-page]");
+    const frameRoot = iframeRef.current?.contentDocument?.querySelector<HTMLElement>(scopeSelector);
     if (frameRoot) applyVisualOverride(frameRoot, override);
   };
 
@@ -472,14 +493,14 @@ function VisualPageEditor({ data, set, slug, route }: { data: ContentData; set: 
     const next = index >= 0
       ? overrides.map((item, itemIndex) => itemIndex === index ? nextOverride : item)
       : [...overrides, nextOverride];
-    set("visualOverrides", next);
+    set(overrideKey, next);
     window.setTimeout(() => applyCurrentPreview(nextOverride), 0);
   };
 
   const prepareFrame = () => {
     cleanupRef.current?.();
     const document = iframeRef.current?.contentDocument;
-    const root = document?.querySelector<HTMLElement>("[data-managed-page]");
+    const root = document?.querySelector<HTMLElement>(scopeSelector);
     if (!document || !root) return;
     document.body.classList.add("admin-visual-editing");
     const style = document.createElement("style");
@@ -492,7 +513,7 @@ function VisualPageEditor({ data, set, slug, route }: { data: ContentData; set: 
         ? target as HTMLElement
         : null;
       if (!element || !root.contains(element)) return null;
-      return element.closest<HTMLElement>("a,button,img,h1,h2,h3,h4,p,li,section,article,form,span,strong,small,em,div");
+      return element.closest<HTMLElement>("a,button,img,h1,h2,h3,h4,p,li,section,article,form,header,nav,span,strong,small,em,div");
     };
     const over = (event: MouseEvent) => {
       const element = normalize(event.target);
@@ -543,13 +564,13 @@ function VisualPageEditor({ data, set, slug, route }: { data: ContentData; set: 
 
   useEffect(() => () => cleanupRef.current?.(), []);
 
-  return <div className="admin-visual-editor">
+  return <div className={`admin-visual-editor ${headerMode ? "admin-header-visual-editor" : ""}`}>
     <section className="admin-visual-canvas">
       <div className="admin-visual-toolbar">
         <div><b>Редактируйте прямо на странице</b><span>Наведите курсор и нажмите на текст, кнопку, картинку, карточку или секцию.</span></div>
-        <div><button type="button" className="admin-secondary-button" onClick={() => { setSelected(null); selectedRef.current = null; setPreviewVersion(Date.now()); }}>Обновить</button><a className="admin-secondary-button" href={route} target="_blank">Открыть страницу ↗</a></div>
+        <div><a className="admin-secondary-button" href={route} target="_blank">Открыть страницу ↗</a></div>
       </div>
-      <iframe ref={iframeRef} key={previewVersion} src={`${route}?admin-preview=${previewVersion}`} title={`Визуальный редактор ${text(data.title)}`} onLoad={prepareFrame} />
+      <iframe ref={iframeRef} key={previewVersion} src={`${route}?admin-preview=${previewVersion}`} title={`Визуальный редактор ${text(data.title)}`} onLoad={() => window.setTimeout(prepareFrame, 80)} />
     </section>
     <aside className="admin-visual-inspector">
       {!selected ? <div className="admin-visual-empty"><i>↖</i><b>Выберите элемент</b><p>Кликните по нужному месту в предпросмотре. Здесь появятся его текст, цвета, отступы, изображение или ссылка.</p></div> : <>
@@ -559,7 +580,7 @@ function VisualPageEditor({ data, set, slug, route }: { data: ContentData; set: 
         {selected.isImage && <ImageUpload label="Изображение" value={typeof current?.image === "string" ? current.image : selected.image} slug={slug} onChange={(value) => update("image", value)} />}
         <div className="admin-inspector-section"><b>Цвета элемента</b><ColorField label="Фон" value={typeof current?.background === "string" ? current.background : selected.background} onChange={(value) => update("background", value)} /><ColorField label="Цвет текста" value={typeof current?.color === "string" ? current.color : selected.color} onChange={(value) => update("color", value)} /><ColorField label="Цвет рамки" value={typeof current?.borderColor === "string" ? current.borderColor : selected.borderColor} onChange={(value) => update("borderColor", value)} /></div>
         <div className="admin-inspector-section"><b>Размеры элемента</b><div className="admin-inspector-numbers"><Field label="Скругление, px" type="number" value={typeof current?.borderRadius === "number" ? current.borderRadius : selected.borderRadius} onChange={(value) => update("borderRadius", Number(value))} /><Field label="Отступ сверху, px" type="number" value={typeof current?.paddingTop === "number" ? current.paddingTop : selected.paddingTop} onChange={(value) => update("paddingTop", Number(value))} /><Field label="Отступ снизу, px" type="number" value={typeof current?.paddingBottom === "number" ? current.paddingBottom : selected.paddingBottom} onChange={(value) => update("paddingBottom", Number(value))} /></div></div>
-        {current && <button type="button" className="admin-reset-element" onClick={() => { set("visualOverrides", overrides.filter((item) => item.selector !== selected.selector)); setPreviewVersion(Date.now()); setSelected(null); selectedRef.current = null; }}>Сбросить изменения этого элемента</button>}
+        {current && <button type="button" className="admin-reset-element" onClick={() => { set(overrideKey, overrides.filter((item) => item.selector !== selected.selector)); setPreviewVersion(Date.now()); setSelected(null); selectedRef.current = null; }}>Сбросить изменения этого элемента</button>}
       </>}
     </aside>
   </div>;
@@ -579,6 +600,9 @@ function PageFields({
   const schema = pageFieldSchemas[slug] || [
     { key: "heading", label: "Заголовок страницы" },
     { key: "lead", label: "Вводный текст", multiline: true },
+    { key: "bodyHeading", label: "Заголовок основного блока" },
+    { key: "bodyText", label: "Основной текст", multiline: true },
+    { key: "buttonText", label: "Текст кнопки" },
   ];
   return (
     <div className="admin-page-builder">
@@ -911,8 +935,26 @@ function SiteFields({
 }) {
   const phones = Array.isArray(data.phones) ? (data.phones as Phone[]) : [];
   const socials = Array.isArray(data.socials) ? (data.socials as Social[]) : [];
+  const navigation = Array.isArray(data.navigation)
+    ? (data.navigation as NavItem[])
+    : defaultNavigation;
   return (
     <>
+      <div className="admin-subhead admin-site-visual-head">
+        <div><b>Визуальное редактирование шапки</b><span>Выберите логотип, меню, телефон, кнопку или фон шапки прямо в предпросмотре.</span></div>
+      </div>
+      <VisualPageEditor data={data} set={set} slug="site-header" route="/" overrideKey="headerOverrides" scopeSelector=".header" headerMode />
+      <div className="admin-subhead">
+        <div><b>Пункты меню</b><span>Здесь можно добавить созданную страницу в шапку сайта.</span></div>
+        <button type="button" className="admin-secondary-button" onClick={() => set("navigation", [...navigation, { title: "Новая страница", href: "/" }])}>Добавить пункт</button>
+      </div>
+      {navigation.map((item, index) => (
+        <div className="admin-row-card admin-nav-row" key={`${item.href}-${index}`}>
+          <Field label="Название" value={item.title} onChange={(value) => set("navigation", navigation.map((entry, itemIndex) => itemIndex === index ? { ...entry, title: value } : entry))} />
+          <Field label="Адрес страницы" value={item.href} hint="Например: /novaya-stranitsa" onChange={(value) => set("navigation", navigation.map((entry, itemIndex) => itemIndex === index ? { ...entry, href: value } : entry))} />
+          <button type="button" onClick={() => set("navigation", navigation.filter((_, itemIndex) => itemIndex !== index))}>Удалить</button>
+        </div>
+      ))}
       <div className="admin-form-grid">
         <Field label="Электронная почта" value={text(data.email)} onChange={(v) => set("email", v)} type="email" />
         <Field label="Адрес" value={text(data.address)} onChange={(v) => set("address", v)} multiline />
@@ -1095,7 +1137,9 @@ export default function AdminPanel() {
     setError("");
   };
   const create = () => {
-    setSelected({ slug: "", data: clone(emptyData[section]) });
+    const data = clone(emptyData[section]);
+    if (section === "pages") data.title = "Новая страница";
+    setSelected({ slug: "", data });
     setPreviousSlug("");
     setNotice("");
     setError("");
@@ -1116,16 +1160,19 @@ export default function AdminPanel() {
     setError("");
     setNotice("");
     try {
+      const data = section === "pages" && selected.data.template === "custom"
+        ? { ...selected.data, route: `/${slug}` }
+        : selected.data;
       const result = await jsonRequest<{ slug: string }>("/api/admin/content", {
         method: "PUT",
         body: JSON.stringify({
           type: section,
           slug,
           previousSlug,
-          data: selected.data,
+          data,
         }),
       });
-      setSelected({ ...selected, slug: result.slug });
+      setSelected({ ...selected, slug: result.slug, data });
       setPreviousSlug(result.slug);
       await load(section, result.slug);
       setNotice("Сохранено. Изменения уже доступны на сайте.");
@@ -1136,7 +1183,8 @@ export default function AdminPanel() {
     }
   };
   const remove = async () => {
-    if (!selected || section === "site" || currentSection.fixed) return;
+    const removableCustomPage = section === "pages" && selected?.data.template === "custom";
+    if (!selected || section === "site" || (currentSection.fixed && !removableCustomPage)) return;
     if (!window.confirm(`Удалить «${text(selected.data.title)}»?`)) return;
     setSaving(true);
     try {
@@ -1193,7 +1241,7 @@ export default function AdminPanel() {
             <span>Раздел</span>
             <h1>{currentSection.title}</h1>
           </div>
-          {!currentSection.single && !currentSection.fixed && !selected && (
+          {!currentSection.single && (!currentSection.fixed || section === "pages") && !selected && (
             <button type="button" className="admin-primary-button" onClick={create}>
               Добавить
             </button>
@@ -1217,19 +1265,22 @@ export default function AdminPanel() {
                 <button type="button" className="admin-primary-button" disabled={saving} onClick={() => void save()}>
                   {saving ? "Сохраняем…" : "Сохранить"}
                 </button>
-                {section !== "site" && !currentSection.fixed && previousSlug && (
+                {section !== "site" && (!currentSection.fixed || (section === "pages" && selected.data.template === "custom")) && previousSlug && (
                   <button type="button" className="admin-danger-button" disabled={saving} onClick={() => void remove()}>
                     Удалить
                   </button>
                 )}
               </div>
             </div>
-            {section !== "site" && section !== "pages" && (
+            {section !== "site" && (section !== "pages" || !previousSlug || selected.data.template === "custom") && (
               <Field
                 label="Адрес страницы"
                 value={selected.slug}
-                onChange={(value) => setSelected({ ...selected, slug: makeSlug(value) })}
-                hint="Латиницей, без пробелов. Можно сформировать из названия."
+                onChange={(value) => {
+                  const slug = makeSlug(value);
+                  setSelected({ ...selected, slug, data: section === "pages" ? { ...selected.data, route: slug ? `/${slug}` : "" } : selected.data });
+                }}
+                hint={section === "pages" ? "Например: o-kompanii. Страница откроется по адресу /o-kompanii" : "Латиницей, без пробелов. Можно сформировать из названия."}
               />
             )}
             {section === "pages" && <PageFields data={selected.data} set={setData} slug={selected.slug} />}

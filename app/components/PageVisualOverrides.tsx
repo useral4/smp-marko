@@ -35,8 +35,11 @@ function replaceDirectText(element: Element, value: string) {
 export function applyVisualOverride(root: ParentNode, override: VisualOverride) {
   if (!override.selector || !/^[a-z0-9_\- .>:+()[\]=\"']+$/i.test(override.selector)) return;
   let element: HTMLElement | null = null;
+  if (override.selector === "__scope__" && "style" in root) {
+    element = root as HTMLElement;
+  }
   try {
-    element = root.querySelector<HTMLElement>(override.selector);
+    if (!element) element = root.querySelector<HTMLElement>(override.selector);
   } catch {
     return;
   }
@@ -68,14 +71,16 @@ export function applyVisualOverride(root: ParentNode, override: VisualOverride) 
   }
 }
 
-export default function PageVisualOverrides({ overrides }: { overrides: VisualOverride[] }) {
+export default function PageVisualOverrides({ overrides, rootSelector }: { overrides: VisualOverride[]; rootSelector?: string }) {
   const marker = useRef<HTMLSpanElement>(null);
 
   useEffect(() => {
-    const root = marker.current?.parentElement;
+    const root = rootSelector
+      ? document.querySelector<HTMLElement>(rootSelector)
+      : marker.current?.parentElement;
     if (!root) return;
     overrides.forEach((override) => applyVisualOverride(root, override));
-  }, [overrides]);
+  }, [overrides, rootSelector]);
 
   return <span ref={marker} hidden aria-hidden="true" />;
 }

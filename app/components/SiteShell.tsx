@@ -16,6 +16,8 @@ export type SiteShellContent = {
   email: string;
   address: string;
   contactMap: string;
+  navigation: Array<{ title: string; href: string }>;
+  headerOverrides: import("./PageVisualOverrides").VisualOverride[];
 };
 
 const SiteContentContext = createContext<SiteShellContent>({
@@ -24,6 +26,8 @@ const SiteContentContext = createContext<SiteShellContent>({
   email: "",
   address: "",
   contactMap: "",
+  navigation: [],
+  headerOverrides: [],
 });
 
 export function UiIcon({ name, size = 20 }: { name: string; size?: number }) {
@@ -139,10 +143,14 @@ export default function SiteShell({
     return <>{children}</>;
   }
 
-  const links = [["Услуги","/services"],["Объекты","/objects"],["Реконструкция","/reconstruction"],["Технология","/technology"],["Проектировщикам","/designers"],["Статьи","/articles"],["Новости","/news"],["Контакты","/contacts"]];
+  const defaultLinks = [["Услуги","/services"],["Объекты","/objects"],["Реконструкция","/reconstruction"],["Технология","/technology"],["Проектировщикам","/designers"],["Статьи","/articles"],["Новости","/news"],["Контакты","/contacts"]];
+  const links = siteContent.navigation.length
+    ? siteContent.navigation.map((item) => [item.title, item.href])
+    : defaultLinks;
 
   return <SiteContentContext.Provider value={siteContent}><LeadContext.Provider value={() => setLead(true)}><>
     <header className="header"><div className="container header-inner"><Logo/><nav className="desktop-nav">{links.map(([title,href])=><Link key={href} href={href}>{title}</Link>)}</nav><div className="header-actions"><a className="header-phone" href={phoneHref}><UiIcon name="phone" size={17}/><span>{phoneDisplay}</span></a><LeadButton className="button button-small"/><button className="burger" onClick={()=>setMenu(true)} aria-label="Открыть меню"><UiIcon name="menu" size={24}/></button></div></div></header>
+    <PageVisualOverrides overrides={siteContent.headerOverrides} rootSelector=".header"/>
     <div className={`mobile-menu ${menu ? "is-open" : ""}`}><div className="mobile-menu-head"><Logo/><button onClick={()=>setMenu(false)} aria-label="Закрыть меню"><UiIcon name="close"/></button></div><nav>{links.map(([title,href],index)=><Link onClick={()=>setMenu(false)} key={href} href={href}>{title}<span>{String(index + 1).padStart(2,"0")}</span></Link>)}</nav><div className="mobile-menu-bottom"><div className="mobile-phones">{phones.map((phone)=><a key={phone.href} href={phone.href}>{phone.display}</a>)}</div><LeadButton>Отправить план</LeadButton></div></div>
     <div className={activePage ? "page-managed" : undefined} data-managed-page={activePage ? activePage.slug : undefined} style={activePage ? pageThemeStyle(activePage) : undefined}>
       {children}

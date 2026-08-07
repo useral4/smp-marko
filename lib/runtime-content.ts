@@ -9,6 +9,7 @@ import type {
   CmsProject,
   CmsSocial,
 } from "../app/generated-content";
+import type { VisualOverride } from "../app/components/PageVisualOverrides";
 
 type JsonRecord = Record<string, unknown>;
 
@@ -18,6 +19,8 @@ export type CmsSiteContent = {
   email: string;
   address: string;
   contactMap: string;
+  navigation: Array<{ title: string; href: string }>;
+  headerOverrides: VisualOverride[];
 };
 
 export type CmsPage = {
@@ -199,6 +202,15 @@ export async function readSiteContent(): Promise<CmsSiteContent> {
       email: String(site.email || ""),
       address: String(site.address || ""),
       contactMap: String(site.contactMap || ""),
+      navigation: Array.isArray(site.navigation)
+        ? site.navigation.map((item) => {
+            const value = item && typeof item === "object" ? item as JsonRecord : {};
+            return { title: String(value.title || ""), href: String(value.href || "") };
+          }).filter((item) => item.title && item.href)
+        : [],
+      headerOverrides: Array.isArray(site.headerOverrides)
+        ? site.headerOverrides as VisualOverride[]
+        : [],
     };
   } catch {
     return {
@@ -207,6 +219,8 @@ export async function readSiteContent(): Promise<CmsSiteContent> {
       email: "",
       address: "",
       contactMap: "",
+      navigation: [],
+      headerOverrides: [],
     };
   }
 }

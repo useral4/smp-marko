@@ -297,6 +297,7 @@
 .admin-visual-inspector .admin-field{margin-bottom:15px}.admin-visual-inspector .admin-upload-box{margin:0 0 18px;padding:14px;align-items:stretch;flex-direction:column}.admin-visual-inspector .admin-builder-upload>div:last-child{justify-content:flex-end}
 .admin-inspector-section{margin-top:20px;padding-top:18px;border-top:1px solid var(--admin-line)}.admin-inspector-section>b{display:block;margin-bottom:16px;font-size:13px}.admin-inspector-numbers{display:grid;grid-template-columns:1fr 1fr;gap:0 10px}.admin-inspector-numbers .admin-field:last-child{grid-column:1/-1}
 .admin-reset-element{width:100%;margin-top:18px;padding:12px;border:1px solid #efcbc7;border-radius:9px;background:#fff7f6;color:#a3312b;font-weight:700;cursor:pointer}
+.admin-site-visual-head{margin-top:0;margin-bottom:14px}.admin-header-visual-editor{min-height:500px;margin-bottom:34px}.admin-header-visual-editor .admin-visual-canvas{position:static;height:500px;min-height:500px}.admin-nav-row{grid-template-columns:1fr 1.4fr auto}.admin-nav-row>button{min-height:46px}
 @media(max-width:1350px){.admin-visual-editor{grid-template-columns:1fr}.admin-visual-canvas{position:static;height:72vh;min-height:620px}.admin-visual-inspector{min-height:0}}
 @media(max-width:700px){.admin-visual-canvas{height:65vh;min-height:520px}.admin-visual-toolbar{align-items:stretch;flex-direction:column}.admin-visual-toolbar>div:last-child{display:grid;grid-template-columns:1fr 1fr}.admin-visual-editor{min-height:0}.admin-visual-inspector{padding:17px}}
 
