@@ -36,12 +36,53 @@
   "storyCardBackground": "#ffffff",
   "storyCardRadius": 18,
   "storyFrames": [
-    { "title": "Подготовка стен", "text": "Формируем опорный пояс и проверяем геометрию стен перед монтажом перекрытия.", "image": "/archive/walls-ring-beam-stage.jpg" },
-    { "title": "Монтаж балок", "text": "Устанавливаем временные опоры и раскладываем несущие балки по монтажной схеме.", "image": "/archive/beams-installation-stage.jpg" },
-    { "title": "Раскладка системы", "text": "Выставляем шаг балок и подготавливаем основание под заполнение пролётов.", "image": "/archive/beam-layout-stage.jpg" },
-    { "title": "Укладка блоков", "text": "Заполняем пространство между балками лёгкими газобетонными блоками.", "image": "/archive/blocks-on-beams-detail.jpg" },
-    { "title": "Армирование", "text": "Укладываем арматурную сетку и усиливаем проёмы, края и опорные участки.", "image": "/archive/mesh-installation-stage.jpg" },
-    { "title": "Бетонирование", "text": "После бетонирования элементы работают вместе как единое сборно-монолитное перекрытие.", "image": "/archive/marko-slab-section-a.jpg" }
+    {
+      "title": "Подготовка стен",
+      "text": "Формируем опорный пояс и проверяем геометрию стен перед монтажом перекрытия.",
+      "image": "/archive/walls-ring-beam-stage.jpg"
+    },
+    {
+      "title": "Монтаж балок",
+      "text": "Устанавливаем временные опоры и раскладываем несущие балки по монтажной схеме.",
+      "image": "/archive/beams-installation-stage.jpg"
+    },
+    {
+      "title": "Раскладка системы",
+      "text": "Выставляем шаг балок и подготавливаем основание под заполнение пролётов.",
+      "image": "/archive/beam-layout-stage.jpg"
+    },
+    {
+      "title": "Укладка блоков",
+      "text": "Заполняем пространство между балками лёгкими газобетонными блоками.",
+      "image": "/archive/blocks-on-beams-detail.jpg"
+    },
+    {
+      "title": "Армирование",
+      "text": "Укладываем арматурную сетку и усиливаем проёмы, края и опорные участки.",
+      "image": "/archive/mesh-installation-stage.jpg"
+    },
+    {
+      "title": "Бетонирование",
+      "text": "После бетонирования элементы работают вместе как единое сборно-монолитное перекрытие.",
+      "image": "/archive/marko-slab-section-a.jpg"
+    }
   ],
-  "customBlocks": []
+  "customBlocks": [],
+  "visualOverrides": [
+    {
+      "selector": "div:nth-of-type(3) > strong",
+      "label": "Выделенный текст",
+      "text": "от 350 кг/м²"
+    },
+    {
+      "selector": "div.section-head:nth-of-type(1) > p",
+      "label": "Текст",
+      "text": "Цена указана за Балки СМП Марко (КС).                                             Газобетон, арматура, арматурная сетка, бетон, доставка и работы учитываются отдельно."
+    },
+    {
+      "selector": "div.comparison-note:nth-of-type(3) > span",
+      "label": "Надпись",
+      "text": "В базовый комплект входят Балки СМП Марко (КС)"
+    }
+  ]
 }
