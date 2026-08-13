@@ -67,7 +67,7 @@ export function SocialLinks({ labels = false }: { labels?: boolean }) {
   return <div className={`brand-socials ${labels ? "with-labels" : ""}`}>{socials.map((s) => <a className={`brand-social-${s.icon}`} key={s.name} href={s.href} target="_blank" rel="noreferrer" aria-label={s.name}><BrandIcon name={s.icon}/>{labels && <span>{s.name}</span>}</a>)}</div>;
 }
 
-export function ProjectForm({ className = "" }: { className?: string }) {
+export function ProjectForm({ className = "", onSuccess }: { className?: string; onSuccess?: () => void }) {
   const router = useRouter();
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
@@ -82,6 +82,7 @@ export function ProjectForm({ className = "" }: { className?: string }) {
       const response=await fetch("/api/leads",{method:"POST",body:form});
       const result=await response.json() as {ok?:boolean;error?:string};
       if(!response.ok||!result.ok)throw new Error(result.error||"Не удалось отправить заявку");
+      onSuccess?.();
       router.push("/thanks");
     }catch(nextError){setError(nextError instanceof Error?nextError.message:"Не удалось отправить заявку");setSubmitting(false)}
   };
@@ -137,6 +138,8 @@ export default function SiteShell({
 
   useEffect(() => { setCookie(localStorage.getItem("marko-cookie") !== "accepted"); }, []);
 
+  useEffect(() => { setMenu(false); setLead(false); }, [pathname]);
+
   useEffect(() => { document.body.style.overflow = menu || lead ? "hidden" : ""; }, [menu, lead]);
 
   if (pathname.startsWith("/admin")) {
@@ -160,6 +163,6 @@ export default function SiteShell({
     <footer><div className="container footer-main"><div><Link href="/" className="footer-construction-logo"><Image src="/marko-construction.jpg" alt="MARKO CONSTRUCTION" width={1900} height={920}/></Link><p>Сборно-монолитные перекрытия для нового строительства, реконструкции и капитального ремонта.</p></div><div className="footer-nav"><b>Разделы</b>{links.map(([title,href])=><Link key={href} href={href}>{title}</Link>)}<Link href="/designers">Проектировщикам</Link><Link href="/about">О компании</Link></div><div><b>Связаться</b>{phones.map((phone)=><a className="footer-phone" key={phone.href} href={phone.href}>{phone.display}<small>{phone.city}</small></a>)}<a href={`mailto:${contactEmail}`}>{contactEmail}</a><p className="footer-address">{contactAddress}</p><SocialLinks/></div></div><div className="container footer-bottom"><span>© 2026 СМП МАРКО</span><Link href="/privacy">Политика конфиденциальности</Link><a href="#top">Наверх ↑</a></div></footer>
     <MessengerDock/>
     {cookie&&<div className="cookie"><div><b>Мы используем cookie</b><p>Они помогают сайту работать корректно.</p></div><button onClick={()=>{localStorage.setItem("marko-cookie","accepted");setCookie(false)}}>Хорошо</button><button className="cookie-close" onClick={()=>setCookie(false)} aria-label="Закрыть"><UiIcon name="close" size={18}/></button></div>}
-    {lead&&<div className="modal-backdrop" onMouseDown={(event)=>{if(event.target===event.currentTarget)setLead(false)}}><div className="modal lead-modal"><button className="modal-close" onClick={()=>setLead(false)} aria-label="Закрыть"><UiIcon name="close"/></button><div className="eyebrow"><span/>Расчёт за 1 рабочий день</div><h2>Отправьте план перекрытия</h2><p>Принимаем PDF, DWG, фото плана или эскиз. Инженер подберёт систему и подготовит предварительный расчёт.</p><ProjectForm className="modal-project-form"/></div></div>}
+    {lead&&<div className="modal-backdrop" onMouseDown={(event)=>{if(event.target===event.currentTarget)setLead(false)}}><div className="modal lead-modal"><button className="modal-close" onClick={()=>setLead(false)} aria-label="Закрыть"><UiIcon name="close"/></button><div className="eyebrow"><span/>Расчёт за 1 рабочий день</div><h2>Отправьте план перекрытия</h2><p>Принимаем PDF, DWG, фото плана или эскиз. Инженер подберёт систему и подготовит предварительный расчёт.</p><ProjectForm className="modal-project-form" onSuccess={()=>setLead(false)}/></div></div>}
   </></LeadContext.Provider></SiteContentContext.Provider>;
 }

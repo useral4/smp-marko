@@ -67,6 +67,9 @@ async function sendLeadEmail(lead: LeadRecord, attachmentPath: string | null) {
     port: Number(process.env.SMTP_PORT || 465),
     secure: process.env.SMTP_SECURE !== "false",
     auth: { user, pass: password },
+    connectionTimeout: 10_000,
+    greetingTimeout: 10_000,
+    socketTimeout: 60_000,
   });
   const to = process.env.LEAD_EMAIL_TO || "info@kolumb.ru";
   await transporter.sendMail({
