@@ -13,5 +13,18 @@
   "contactMapButton": "Записаться на встречу",
   "objectsMapEyebrow": "География работ",
   "objectsMapHeading": "Карта наших объектов",
-  "objectsMapButton": "Открыть раздел объектов"
+  "objectsMapButton": "Открыть раздел объектов",
+  "requisitesHeading": "Реквизиты организации",
+  "companyLegalName": "",
+  "legalAddress": "",
+  "postalAddress": "",
+  "inn": "",
+  "kpp": "",
+  "ogrn": "",
+  "director": "",
+  "bankName": "",
+  "settlementAccount": "",
+  "correspondentAccount": "",
+  "bik": "",
+  "requisitesNote": ""
 }
