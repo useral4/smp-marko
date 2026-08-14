@@ -15,6 +15,7 @@ type ContentData = Record<string, unknown>;
 type Item = { slug: string; data: ContentData };
 type SectionKey =
   | "pages"
+  | "contacts"
   | "services"
   | "objects"
   | "articles"
@@ -30,13 +31,14 @@ const sections: Array<{
   fixed?: boolean;
 }> = [
   { key: "pages", title: "Главная и страницы", fixed: true },
+  { key: "contacts", title: "Контакты", single: true, fixed: true },
   { key: "services", title: "Услуги" },
   { key: "objects", title: "Объекты" },
   { key: "articles", title: "Статьи" },
   { key: "news", title: "Новости" },
   { key: "documents", title: "Технические документы" },
   { key: "leads", title: "Заявки с сайта", fixed: true },
-  { key: "site", title: "Шапка, контакты и ссылки", single: true },
+  { key: "site", title: "Шапка и меню", single: true },
 ];
 
 const defaultNavigation: NavItem[] = [
@@ -63,6 +65,20 @@ const emptyData: Record<SectionKey, ContentData> = {
     bodyText: "Добавьте основной текст страницы.",
     buttonText: "Получить консультацию",
     customBlocks: [],
+    visualOverrides: [],
+  },
+  contacts: {
+    title: "Страница «Контакты»",
+    route: "/contacts",
+    published: true,
+    order: 80,
+    heading: "Контакты",
+    lead: "",
+    phones: [],
+    email: "",
+    address: "",
+    contactMap: "",
+    socials: [],
     visualOverrides: [],
   },
   services: {
@@ -122,6 +138,8 @@ const emptyData: Record<SectionKey, ContentData> = {
   leads: {},
   site: { phones: [], email: "", address: "", contactMap: "", socials: [], navigation: [], headerOverrides: [] },
 };
+
+const contactSiteKeys = ["phones", "email", "address", "contactMap", "socials", "navigation", "headerOverrides"] as const;
 
 function text(value: unknown) {
   return typeof value === "string" ? value : "";
@@ -955,9 +973,11 @@ function NewsFields({
 function SiteFields({
   data,
   set,
+  contactsOnly = false,
 }: {
   data: ContentData;
   set: (key: string, value: unknown) => void;
+  contactsOnly?: boolean;
 }) {
   const phones = Array.isArray(data.phones) ? (data.phones as Phone[]) : [];
   const socials = Array.isArray(data.socials) ? (data.socials as Social[]) : [];
@@ -966,6 +986,7 @@ function SiteFields({
     : defaultNavigation;
   return (
     <>
+      {!contactsOnly && <>
       <div className="admin-subhead admin-site-visual-head">
         <div><b>Визуальное редактирование шапки</b><span>Выберите логотип, меню, телефон, кнопку или фон шапки прямо в предпросмотре.</span></div>
       </div>
@@ -981,6 +1002,12 @@ function SiteFields({
           <button type="button" onClick={() => set("navigation", navigation.filter((_, itemIndex) => itemIndex !== index))}>Удалить</button>
         </div>
       ))}
+      </>}
+      {contactsOnly && <>
+      <PageFields data={data} set={set} slug="contacts" />
+      <div className="admin-subhead">
+        <div><b>Контактные данные</b><span>Телефоны, почта, адрес, карта и ссылки, которые показываются на странице и в подвале сайта.</span></div>
+      </div>
       <div className="admin-form-grid">
         <Field label="Электронная почта" value={text(data.email)} onChange={(v) => set("email", v)} type="email" />
         <Field label="Адрес" value={text(data.address)} onChange={(v) => set("address", v)} multiline />
@@ -1019,6 +1046,7 @@ function SiteFields({
           <button type="button" onClick={() => set("socials", socials.filter((_, i) => i !== index))}>Удалить</button>
         </div>
       ))}
+      </>}
     </>
   );
 }
@@ -1118,10 +1146,23 @@ export default function AdminPanel() {
     setError("");
     setNotice("");
     try {
+      if (nextSection === "contacts") {
+        const [pagesResult, siteResult] = await Promise.all([
+          jsonRequest<{ items: Item[] }>("/api/admin/content?type=pages"),
+          jsonRequest<{ items: Item[] }>("/api/admin/content?type=site"),
+        ]);
+        const pageItem = pagesResult.items.find((entry) => entry.slug === "contacts") || { slug: "contacts", data: clone(emptyData.contacts) };
+        const siteItem = siteResult.items.find((entry) => entry.slug === "index") || { slug: "index", data: clone(emptyData.site) };
+        const item = { slug: "contacts", data: { ...pageItem.data, ...siteItem.data } };
+        setItems([item]);
+        setSelected(clone(item));
+        setPreviousSlug("contacts");
+        return;
+      }
       const result = await jsonRequest<{ items: Item[] }>(
         nextSection === "leads" ? "/api/admin/leads" : `/api/admin/content?type=${nextSection}`,
       );
-      const ordered = result.items.sort(
+      const ordered = result.items.filter((item) => nextSection !== "pages" || item.slug !== "contacts").sort(
         (a, b) => number(a.data.order) - number(b.data.order),
       );
       setItems(ordered);
@@ -1177,7 +1218,7 @@ export default function AdminPanel() {
   };
   const save = async () => {
     if (!selected) return;
-    const slug = section === "site" ? "index" : selected.slug || makeSlug(text(selected.data.title));
+    const slug = section === "site" ? "index" : section === "contacts" ? "contacts" : selected.slug || makeSlug(text(selected.data.title));
     if (!slug) {
       setError("Укажите название и адрес страницы");
       return;
@@ -1186,6 +1227,23 @@ export default function AdminPanel() {
     setError("");
     setNotice("");
     try {
+      if (section === "contacts") {
+        const siteData = Object.fromEntries(contactSiteKeys.map((key) => [key, selected.data[key]]));
+        const pageData = Object.fromEntries(Object.entries(selected.data).filter(([key]) => !contactSiteKeys.includes(key as typeof contactSiteKeys[number])));
+        await Promise.all([
+          jsonRequest("/api/admin/content", {
+            method: "PUT",
+            body: JSON.stringify({ type: "pages", slug: "contacts", previousSlug: "contacts", data: pageData }),
+          }),
+          jsonRequest("/api/admin/content", {
+            method: "PUT",
+            body: JSON.stringify({ type: "site", slug: "index", previousSlug: "index", data: siteData }),
+          }),
+        ]);
+        await load("contacts");
+        setNotice("Сохранено. Изменения уже доступны на сайте.");
+        return;
+      }
       const data = section === "pages" && selected.data.template === "custom"
         ? { ...selected.data, route: `/${slug}` }
         : selected.data;
@@ -1284,8 +1342,8 @@ export default function AdminPanel() {
         ) : selected ? (
           <section className="admin-editor">
             <div className="admin-editor-head">
-              <button type="button" className="admin-back" onClick={() => section === "site" ? undefined : setSelected(null)}>
-                {section === "site" ? "Настройки сайта" : "← Назад к списку"}
+              <button type="button" className="admin-back" onClick={() => currentSection.single ? undefined : setSelected(null)}>
+                {currentSection.single ? currentSection.title : "← Назад к списку"}
               </button>
               <div>
                 <button type="button" className="admin-primary-button" disabled={saving} onClick={() => void save()}>
@@ -1298,7 +1356,7 @@ export default function AdminPanel() {
                 )}
               </div>
             </div>
-            {section !== "site" && (section !== "pages" || !previousSlug || selected.data.template === "custom") && (
+            {section !== "site" && section !== "contacts" && (section !== "pages" || !previousSlug || selected.data.template === "custom") && (
               <Field
                 label="Адрес страницы"
                 value={selected.slug}
@@ -1315,6 +1373,7 @@ export default function AdminPanel() {
             {section === "articles" && <ArticleFields data={selected.data} set={setData} />}
             {section === "news" && <NewsFields data={selected.data} set={setData} />}
             {section === "documents" && <DocumentFields data={selected.data} set={setData} />}
+            {section === "contacts" && <SiteFields data={selected.data} set={setData} contactsOnly />}
             {section === "site" && <SiteFields data={selected.data} set={setData} />}
             <div className="admin-editor-footer">
               <button type="button" className="admin-primary-button" disabled={saving} onClick={() => void save()}>
