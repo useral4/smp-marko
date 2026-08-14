@@ -344,6 +344,19 @@ const pageFieldSchemas: Record<string, PageFieldSpec[]> = {
     { key: "ctaHeading", label: "Финальный призыв" },
     { key: "ctaButton", label: "Кнопка финального призыва" },
   ],
+  contacts: [
+    { key: "heading", label: "Заголовок страницы" },
+    { key: "lead", label: "Вводный текст", multiline: true },
+    { key: "emailLabel", label: "Подпись электронной почты" },
+    { key: "socialsLabel", label: "Подпись соцсетей и мессенджеров" },
+    { key: "addressLabel", label: "Подпись адреса" },
+    { key: "contactMapEyebrow", label: "Надзаголовок карты контактов" },
+    { key: "contactMapHeading", label: "Заголовок карты контактов" },
+    { key: "contactMapButton", label: "Кнопка записи на встречу" },
+    { key: "objectsMapEyebrow", label: "Надзаголовок карты объектов" },
+    { key: "objectsMapHeading", label: "Заголовок карты объектов" },
+    { key: "objectsMapButton", label: "Ссылка на объекты" },
+  ],
 };
 
 function ColorField({ label, value, onChange }: { label: string; value: string; onChange: (value: string) => void }) {

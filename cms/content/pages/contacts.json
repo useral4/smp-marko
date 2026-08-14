@@ -1,0 +1,17 @@
+{
+  "title": "Страница «Контакты»",
+  "route": "/contacts",
+  "published": true,
+  "order": 80,
+  "heading": "Контакты",
+  "lead": "Позвоните или напишите в MAX, WhatsApp, Telegram либо ВКонтакте. Инженер поможет собрать исходные данные для расчёта.",
+  "emailLabel": "Электронная почта",
+  "socialsLabel": "Социальные сети и мессенджеры",
+  "addressLabel": "Адрес",
+  "contactMapEyebrow": "Контактная карта",
+  "contactMapHeading": "Офис и производство",
+  "contactMapButton": "Записаться на встречу",
+  "objectsMapEyebrow": "География работ",
+  "objectsMapHeading": "Карта наших объектов",
+  "objectsMapButton": "Открыть раздел объектов"
+}
