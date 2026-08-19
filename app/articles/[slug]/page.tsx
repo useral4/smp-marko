@@ -6,8 +6,10 @@ import { readArticles } from "../../../lib/runtime-content";
 
 function compactSeoTitle(title:string){
   if(title.length<=47)return `${title} — СМП МАРКО`;
+  const topic=title.split(":",1)[0].trim();
+  if(topic.length>=20&&topic.length<=47)return `${topic} — СМП МАРКО`;
   const shortened=title.slice(0,58).replace(/\s+\S*$/u,"").replace(/[,:;—-]+$/u,"").trim();
-  return shortened || title.slice(0,58).trim();
+  return `${shortened || title.slice(0,57).trim()}…`;
 }
 
 export async function generateMetadata({params}:{params:Promise<{slug:string}>}):Promise<Metadata>{const {slug}=await params;const articles=await readArticles();const article=articles.find((item)=>item.slug===slug);return {title:article?compactSeoTitle(article.title):"Статья — СМП МАРКО",description:article?.excerpt,alternates:article?{canonical:`/articles/${article.slug}`}:undefined}}
