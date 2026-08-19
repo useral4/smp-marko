@@ -97,7 +97,7 @@ export const articles: CmsArticle[] = [
     "tag": "Проектирование",
     "excerpt": "Фундаментальные правила армирования монолитного перекрытия: расчёт, схема каркаса, защитный слой, нахлёсты и контроль перед бетонированием.",
     "lead": "Надёжность монолитного перекрытия определяется не количеством стали «на глаз», а соответствием расчёту, геометрией каркаса и контролем перед бетонированием.",
-    "image": "/archive/reinforcement-mesh-stage.jpg"
+    "image": "/articles/armirovanie-monolitnogo-perekritiya.webp"
   },
   {
     "sourceHref": "https://smp-marko.com/articles/perekrytiya-marko-osobennosti-konstruktsii-i-montazha",
@@ -141,7 +141,7 @@ export const articles: CmsArticle[] = [
     "tag": "Технология",
     "excerpt": "Особенности конструкции и монтажа перекрытий МАРКО: балки, блоки заполнения, арматура, временные опоры и бетонирование системы.",
     "lead": "СМП МАРКО объединяет лёгкие заводские балки, блоки заполнения, арматуру и бетон в единую часторебристую железобетонную конструкцию.",
-    "image": "/articles/floor-system.webp"
+    "image": "/articles/konstruktsiya-i-montazh-perekrytiy-marko.webp"
   },
   {
     "sourceHref": "https://smp-marko.com/uslugi/vosstanovlenie-perekrytij",
@@ -186,7 +186,7 @@ export const articles: CmsArticle[] = [
     "tag": "Реконструкция",
     "excerpt": "Как обследуют старую конструкцию и организуют замену перекрытия в здании с ограниченным доступом.",
     "lead": "Реконструкция начинается с обследования: необходимо понять состояние балок, стен и фундамента, а затем рассчитать новое перекрытие под современные нагрузки.",
-    "image": "/service-replace.jpg"
+    "image": "/articles/zamena-derevyannyh-perekritiy.webp"
   },
   {
     "sourceHref": "https://web.archive.org/web/20250623184912/https://smp-marko.com/articles/armaturnyye-setki-vazhnyy-element-perekrytiy-marko",
@@ -227,7 +227,7 @@ export const articles: CmsArticle[] = [
     "tag": "MARKO",
     "excerpt": "Роль арматурных сеток в перекрытиях МАРКО. Обеспечение прочности и долговечности конструкции.",
     "lead": "Роль арматурных сеток в перекрытиях МАРКО. Обеспечение прочности и долговечности конструкции.",
-    "image": "/archive/reinforcement-mesh-stage.jpg"
+    "image": "/articles/armaturnyye-setki-vazhnyy-element-perekrytiy-marko.webp"
   },
   {
     "sourceHref": "https://web.archive.org/web/20250623185625/https://smp-marko.com/articles/beton-dlya-perekrytiy-marko",
@@ -275,7 +275,7 @@ export const articles: CmsArticle[] = [
     "tag": "MARKO",
     "excerpt": "Какой бетон лучше использовать для перекрытий МАРКО? Требования к бетону, марки и рекомендации. Монолитные ребристые перекрытия напрямую от производителя.",
     "lead": "Какой бетон лучше использовать для перекрытий МАРКО? Требования к бетону, марки и рекомендации. Монолитные ребристые перекрытия напрямую от производителя.",
-    "image": "/archive/slab-formwork-stage.jpg"
+    "image": "/articles/beton-dlya-perekrytiy-marko.webp"
   },
   {
     "sourceHref": "https://web.archive.org/web/20250623185916/https://smp-marko.com/articles/derevyannyye-perekrytiya-istoriya-i-sovremennost",
@@ -315,7 +315,7 @@ export const articles: CmsArticle[] = [
     "tag": "MARKO",
     "excerpt": "Эволюция деревянных перекрытий от древности до наших дней. Плюсы и минусы деревянных перекрытий.",
     "lead": "Эволюция деревянных перекрытий от древности до наших дней. Плюсы и минусы деревянных перекрытий.",
-    "image": "/service-replace.jpg"
+    "image": "/articles/derevyannyye-perekrytiya-istoriya-i-sovremennost.webp"
   },
   {
     "sourceHref": "https://web.archive.org/web/20250623185804/https://smp-marko.com/articles/gazobeton-material-dlya-perekrytiy-marko",
@@ -355,7 +355,7 @@ export const articles: CmsArticle[] = [
     "tag": "MARKO",
     "excerpt": "Использование газобетона в перекрытиях МАРКО. Преимущества, недостатки и особенности применения.",
     "lead": "Использование газобетона в перекрытиях МАРКО. Преимущества, недостатки и особенности применения.",
-    "image": "/archive/blocks-on-beams-detail.jpg"
+    "image": "/articles/gazobeton-material-dlya-perekrytiy-marko.webp"
   },
   {
     "sourceHref": "https://web.archive.org/web/20250623191953/https://smp-marko.com/articles/istoriya-sozdaniya-i-razvitiya-sborno-monolitnykh-perekrytiy",
@@ -399,7 +399,7 @@ export const articles: CmsArticle[] = [
     "tag": "MARKO",
     "excerpt": "История создания и развития сборно-монолитных перекрытий (СМП) от компании Марко. Монолитные ребристые перекрытия напрямую от производителя.",
     "lead": "История создания и развития сборно-монолитных перекрытий (СМП) от компании Марко. Монолитные ребристые перекрытия напрямую от производителя.",
-    "image": "/articles/floor-system.webp"
+    "image": "/articles/istoriya-sozdaniya-i-razvitiya-sborno-monolitnykh-perekrytiy.webp"
   },
   {
     "sourceHref": "https://web.archive.org/web/20251215001245/https://smp-marko.com/articles/oshibki-pri-zalivke-monolita",
@@ -435,7 +435,7 @@ export const articles: CmsArticle[] = [
     "tag": "MARKO",
     "excerpt": "Статистика шокирует: 60% самодельных монолитов трескаются в первые годы. Эксперты \"МАРКО\" раскрывают главные причины — от экономии на арматуре до неправильного ухода за бетоном. Узнайте, как избежать скрытых дефектов и построить по-настоящему надежный дом",
     "lead": "Статистика шокирует: 60% самодельных монолитов трескаются в первые годы. Эксперты \"МАРКО\" раскрывают главные причины — от экономии на арматуре до неправильного ухода за бетоном. Узнайте, как избежать скрытых дефектов и построить по-настоящему надежный дом",
-    "image": "/archive/slab-formwork-stage.jpg"
+    "image": "/articles/oshibki-pri-zalivke-monolita.webp"
   },
   {
     "sourceHref": "https://web.archive.org/web/20250623192526/https://smp-marko.com/articles/smp-markotildaws",
@@ -469,7 +469,7 @@ export const articles: CmsArticle[] = [
     "tag": "MARKO",
     "excerpt": "История развития балок для перекрытий от древности до современных технологий. Балки для перекрытия Марко",
     "lead": "История развития балок для перекрытий от древности до современных технологий. Балки для перекрытия Марко",
-    "image": "/articles/floor-system.webp"
+    "image": "/articles/smp-markotildaws.webp"
   },
   {
     "sourceHref": "https://web.archive.org/web/20250623182740/https://smp-marko.com/articles/vstroyennyye-rigeli",
@@ -510,7 +510,7 @@ export const articles: CmsArticle[] = [
     "tag": "MARKO",
     "excerpt": "Всё про встроенные ригели: зачем они нужны, какие у них преимущества и недостатки",
     "lead": "Всё про встроенные ригели: зачем они нужны, какие у них преимущества и недостатки",
-    "image": "/articles/floor-system.webp"
+    "image": "/articles/vstroyennyye-rigeli.webp"
   },
   {
     "sourceHref": "https://web.archive.org/web/20250623181207/https://smp-marko.com/articles/zemletryasenie-siloj",
@@ -544,7 +544,7 @@ export const articles: CmsArticle[] = [
     "tag": "MARKO",
     "excerpt": "Испытания перекрытий МАРКО на сейсмостойкость. Выдерживают землетрясения силой до 10 баллов.",
     "lead": "Испытания перекрытий МАРКО на сейсмостойкость. Выдерживают землетрясения силой до 10 баллов.",
-    "image": "/articles/floor-system.webp"
+    "image": "/articles/zemletryasenie-siloj.webp"
   },
   {
     "sourceHref": "https://web.archive.org/web/20250623185142/https://smp-marko.com/articles/zvukoizolyaciya_perekrytij_marko",
@@ -581,7 +581,7 @@ export const articles: CmsArticle[] = [
     "tag": "MARKO",
     "excerpt": "Как перекрытия МАРКО обеспечивают эффективную звукоизоляцию? Решения для тишины и комфорта в вашем доме. Монолитные ребристые перекрытия напрямую от производителя.",
     "lead": "Как перекрытия МАРКО обеспечивают эффективную звукоизоляцию? Решения для тишины и комфорта в вашем доме. Монолитные ребристые перекрытия напрямую от производителя.",
-    "image": "/articles/floor-system.webp"
+    "image": "/articles/zvukoizolyaciya_perekrytij_marko.webp"
   },
   {
     "sourceHref": "https://marko.ltd/razmery-perekrytij-marko/",
@@ -620,7 +620,7 @@ export const articles: CmsArticle[] = [
     "tag": "Проектирование",
     "excerpt": "Длина балки связана с расчётным пролётом, глубиной опирания и геометрией здания. Даже небольшое изменение размеров необходимо согласовать с конструктором.",
     "lead": "Длина балки связана с расчётным пролётом, глубиной опирания и геометрией здания. Даже небольшое изменение размеров необходимо согласовать с конструктором.",
-    "image": "/archive/ring-beam-layout.jpg"
+    "image": "/articles/dlina-balok-perekrytiya.webp"
   },
   {
     "sourceHref": "https://marko.ltd/zamena_perekritii/",
@@ -659,7 +659,7 @@ export const articles: CmsArticle[] = [
     "tag": "Реконструкция",
     "excerpt": "При реконструкции новое перекрытие должно учитывать состояние существующих стен, фундаментов и опорных участков, а также принятую последовательность демонтажа.",
     "lead": "При реконструкции новое перекрытие должно учитывать состояние существующих стен, фундаментов и опорных участков, а также принятую последовательность демонтажа.",
-    "image": "/service-replace.jpg"
+    "image": "/articles/zamena-staryh-perekrytiy.webp"
   },
   {
     "sourceHref": "https://marko.ltd/kak_po_nauchnomu_lomali_plitu_perekritiya_marko/",
@@ -698,7 +698,7 @@ export const articles: CmsArticle[] = [
     "tag": "Испытания",
     "excerpt": "Натурные испытания помогают проверить работу конструкции под нагрузкой, характер прогибов и соответствие расчётной модели фактическому поведению перекрытия.",
     "lead": "Натурные испытания помогают проверить работу конструкции под нагрузкой, характер прогибов и соответствие расчётной модели фактическому поведению перекрытия.",
-    "image": "/archive/marko-slab-section-b.jpg"
+    "image": "/articles/ispytanie-plity-perekrytiya.webp"
   },
   {
     "sourceHref": "https://marko.ltd/kesonnye_perekrytiya/",
@@ -737,7 +737,7 @@ export const articles: CmsArticle[] = [
     "tag": "Конструкции",
     "excerpt": "Кессонная схема формирует систему взаимно пересекающихся рёбер и позволяет выразительно работать с большими пространствами и открытым потолком.",
     "lead": "Кессонная схема формирует систему взаимно пересекающихся рёбер и позволяет выразительно работать с большими пространствами и открытым потолком.",
-    "image": "/articles/floor-system.webp"
+    "image": "/articles/kessonnye-perekrytiya.webp"
   },
   {
     "sourceHref": "https://marko.ltd/krivolinejnyj_perimetr_perekrytij_marko/",
@@ -776,7 +776,7 @@ export const articles: CmsArticle[] = [
     "tag": "Проектирование",
     "excerpt": "Эркеры, радиусные фасады и сложные контуры можно учесть в сборно-монолитном перекрытии, если геометрия заранее отражена в монтажной схеме.",
     "lead": "Эркеры, радиусные фасады и сложные контуры можно учесть в сборно-монолитном перекрытии, если геометрия заранее отражена в монтажной схеме.",
-    "image": "/archive/ring-beam-layout.jpg"
+    "image": "/articles/krivolineynyy-perimetr.webp"
   },
   {
     "sourceHref": "https://marko.ltd/krivolinejnye_steny_v_dome/",
@@ -815,7 +815,7 @@ export const articles: CmsArticle[] = [
     "tag": "Проектирование",
     "excerpt": "Сложная форма стен не исключает применение перекрытий МАРКО, но требует точных обмеров и отдельной проработки опирания каждого участка.",
     "lead": "Сложная форма стен не исключает применение перекрытий МАРКО, но требует точных обмеров и отдельной проработки опирания каждого участка.",
-    "image": "/archive/ring-beam-layout.jpg"
+    "image": "/articles/krivolineynye-steny.webp"
   },
   {
     "sourceHref": "https://marko.ltd/lestnica-v-dome/",
@@ -854,7 +854,7 @@ export const articles: CmsArticle[] = [
     "tag": "Проектирование",
     "excerpt": "Лестничный проём влияет на раскладку балок и армирование, поэтому его положение и размеры необходимо определить до изготовления комплекта перекрытия.",
     "lead": "Лестничный проём влияет на раскладку балок и армирование, поэтому его положение и размеры необходимо определить до изготовления комплекта перекрытия.",
-    "image": "/archive/ring-beam-layout.jpg"
+    "image": "/articles/lestnichnyy-proem.webp"
   },
   {
     "sourceHref": "https://marko.ltd/mezhjetazhnye_perekrytija_vazhnyj_vybor/",
@@ -893,7 +893,7 @@ export const articles: CmsArticle[] = [
     "tag": "Технология",
     "excerpt": "Межэтажное перекрытие одновременно воспринимает нагрузки, разделяет помещения и влияет на жёсткость, акустику и пожарную безопасность здания.",
     "lead": "Межэтажное перекрытие одновременно воспринимает нагрузки, разделяет помещения и влияет на жёсткость, акустику и пожарную безопасность здания.",
-    "image": "/articles/floor-system.webp"
+    "image": "/articles/mezetazhnye-perekrytiya.webp"
   },
   {
     "sourceHref": "https://marko.ltd/monolitnii_poyas_obyazatelnii_element_sborno_monolitnogo_perekritiya_marko/",
@@ -932,7 +932,7 @@ export const articles: CmsArticle[] = [
     "tag": "Конструкции",
     "excerpt": "Монолитный пояс распределяет нагрузки и связывает стены с перекрытием. Его конструкция зависит от материала кладки и принятой схемы опирания.",
     "lead": "Монолитный пояс распределяет нагрузки и связывает стены с перекрытием. Его конструкция зависит от материала кладки и принятой схемы опирания.",
-    "image": "/articles/floor-system.webp"
+    "image": "/articles/monolitnyy-poyas.webp"
   },
   {
     "sourceHref": "https://marko.ltd/opalubka-perekrytij/",
@@ -971,7 +971,7 @@ export const articles: CmsArticle[] = [
     "tag": "Монтаж",
     "excerpt": "Выбор опалубки влияет на скорость, трудоёмкость и безопасность устройства перекрытия. В сборно-монолитной системе блоки заполнения формируют межбалочное пространство.",
     "lead": "Выбор опалубки влияет на скорость, трудоёмкость и безопасность устройства перекрытия. В сборно-монолитной системе блоки заполнения формируют межбалочное пространство.",
-    "image": "/archive/beams-installation-stage.jpg"
+    "image": "/articles/opalubka-perekrytiya.webp"
   },
   {
     "sourceHref": "https://marko.ltd/optimizaciya_perekritii_po_nesuschei_sposobnosti_i_stoimosti/",
@@ -1010,7 +1010,7 @@ export const articles: CmsArticle[] = [
     "tag": "Проектирование",
     "excerpt": "Экономичное перекрытие получают расчётом всей системы, а не сокращением отдельных материалов без проверки несущей способности.",
     "lead": "Экономичное перекрытие получают расчётом всей системы, а не сокращением отдельных материалов без проверки несущей способности.",
-    "image": "/archive/ring-beam-layout.jpg"
+    "image": "/articles/optimizaciya-perekrytiya.webp"
   },
   {
     "sourceHref": "https://marko.ltd/proverka_ognestoikosti_perekritii_marko/",
@@ -1049,7 +1049,7 @@ export const articles: CmsArticle[] = [
     "tag": "Безопасность",
     "excerpt": "Огнестойкость характеризует способность конструкции сохранять несущую функцию, целостность и теплоизолирующую способность при пожарном воздействии.",
     "lead": "Огнестойкость характеризует способность конструкции сохранять несущую функцию, целостность и теплоизолирующую способность при пожарном воздействии.",
-    "image": "/archive/marko-slab-section-b.jpg"
+    "image": "/articles/ognestoykost-perekrytiya.webp"
   },
   {
     "sourceHref": "https://marko.ltd/perekrytiya_marko_v_kirpichnom_dome/",
@@ -1088,7 +1088,7 @@ export const articles: CmsArticle[] = [
     "tag": "Проектирование",
     "excerpt": "Кирпичные стены позволяют организовать разные варианты опирания, но состояние кладки, её толщина и расположение проёмов должны быть известны проектировщику.",
     "lead": "Кирпичные стены позволяют организовать разные варианты опирания, но состояние кладки, её толщина и расположение проёмов должны быть известны проектировщику.",
-    "image": "/archive/ring-beam-layout.jpg"
+    "image": "/articles/perekrytiya-v-kirpichnom-dome.webp"
   },
   {
     "sourceHref": "https://marko.ltd/osobennosti_razlichnih_tipov_perekritii_ispolzuemih_pri_stroitelstve_maloetajnih_domov/",
@@ -1127,7 +1127,7 @@ export const articles: CmsArticle[] = [
     "tag": "Сравнение",
     "excerpt": "Для малоэтажного дома применяют деревянные балки, сборные плиты, монолитные и сборно-монолитные системы. У каждого решения свой диапазон применения.",
     "lead": "Для малоэтажного дома применяют деревянные балки, сборные плиты, монолитные и сборно-монолитные системы. У каждого решения свой диапазон применения.",
-    "image": "/archive/blocks-on-beams-detail.jpg"
+    "image": "/articles/tipy-perekrytiy-dlya-doma.webp"
   },
   {
     "sourceHref": "https://marko.ltd/ekspluatiruemaya-ploskaya-teplaya-krovlya-marko/",
@@ -1166,7 +1166,7 @@ export const articles: CmsArticle[] = [
     "tag": "Кровля",
     "excerpt": "Плоская крыша требует совместной проработки несущего основания, уклонов, теплоизоляции, пароизоляции, гидроизоляции и водоотведения.",
     "lead": "Плоская крыша требует совместной проработки несущего основания, уклонов, теплоизоляции, пароизоляции, гидроизоляции и водоотведения.",
-    "image": "/archive/marko-house-model.jpg"
+    "image": "/articles/ploskaya-krysha-marko.webp"
   },
   {
     "sourceHref": "https://marko.ltd/kommunikacii_v_perekrytiyah_marko/",
@@ -1205,7 +1205,7 @@ export const articles: CmsArticle[] = [
     "tag": "Проектирование",
     "excerpt": "Инженерные проходки необходимо координировать с балками и арматурой до монтажа. Это позволяет избежать ослабления несущих элементов на площадке.",
     "lead": "Инженерные проходки необходимо координировать с балками и арматурой до монтажа. Это позволяет избежать ослабления несущих элементов на площадке.",
-    "image": "/archive/ring-beam-layout.jpg"
+    "image": "/articles/kommunikacii-v-perekrytii.webp"
   },
   {
     "sourceHref": "https://marko.ltd/rekonstrukcziya-perekrytij/",
@@ -1244,7 +1244,7 @@ export const articles: CmsArticle[] = [
     "tag": "Реконструкция",
     "excerpt": "Работа в историческом здании требует сохранить ценные элементы и приспособить конструкцию к современным нагрузкам без неоправданного усиления всего объекта.",
     "lead": "Работа в историческом здании требует сохранить ценные элементы и приспособить конструкцию к современным нагрузкам без неоправданного усиления всего объекта.",
-    "image": "/service-replace.jpg"
+    "image": "/articles/rekonstrukciya-istoricheskih-zdaniy.webp"
   },
   {
     "sourceHref": "https://marko.ltd/remont-perekrytij/",
@@ -1283,7 +1283,7 @@ export const articles: CmsArticle[] = [
     "tag": "Реконструкция",
     "excerpt": "Ремонт может включать локальное усиление, замену отдельных участков или устройство нового перекрытия. Решение зависит от причины повреждений и остаточного ресурса.",
     "lead": "Ремонт может включать локальное усиление, замену отдельных участков или устройство нового перекрытия. Решение зависит от причины повреждений и остаточного ресурса.",
-    "image": "/service-replace.jpg"
+    "image": "/articles/remont-iznoshennyh-perekrytiy.webp"
   },
   {
     "sourceHref": "https://marko.ltd/kakoe-perekrytie-deshevle/",
@@ -1322,7 +1322,7 @@ export const articles: CmsArticle[] = [
     "tag": "Стоимость",
     "excerpt": "Корректное сравнение учитывает не только цену элементов, но и доставку, кран, опалубку, монолитные участки, монтаж и адаптацию к планировке.",
     "lead": "Корректное сравнение учитывает не только цену элементов, но и доставку, кран, опалубку, монолитные участки, монтаж и адаптацию к планировке.",
-    "image": "/archive/blocks-on-beams-detail.jpg"
+    "image": "/articles/stoimost-marko-i-pustotnyh-plit.webp"
   },
   {
     "sourceHref": "https://marko.ltd/stikovka_balok_pod_uglom/",
@@ -1361,7 +1361,7 @@ export const articles: CmsArticle[] = [
     "tag": "Проектирование",
     "excerpt": "Стыковка под углом применяется при сложной геометрии, эркерах и изменении направления пролётов. Узел должен передавать расчётные усилия без неопределённой работы элементов.",
     "lead": "Стыковка под углом применяется при сложной геометрии, эркерах и изменении направления пролётов. Узел должен передавать расчётные усилия без неопределённой работы элементов.",
-    "image": "/archive/ring-beam-layout.jpg"
+    "image": "/articles/stykovka-balok-pod-uglom.webp"
   }
 ];
 export const newsItems: CmsNewsItem[] = [
