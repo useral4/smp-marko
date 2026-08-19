@@ -9,6 +9,7 @@ export const metadata: Metadata = {
   title: "Услуги — СМП МАРКО Москва",
   description:
     "Проектирование, производство, монтаж и реконструкция перекрытий МАРКО.",
+  alternates: { canonical: "/services" },
 };
 
 export default async function ServicesPage() {

@@ -18,7 +18,6 @@ export const metadata: Metadata = {
     "монолитные перекрытия Москва и Санкт-Петербург",
   ],
   icons: { icon: "/icon.jpg", shortcut: "/icon.jpg", apple: "/icon.jpg" },
-  alternates: { canonical: "/" },
   robots: { index: true, follow: true },
   openGraph: {
     type: "website",

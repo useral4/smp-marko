@@ -1,5 +1,8 @@
 import Image from "next/image";
+import type { Metadata } from "next";
 import Link from "next/link";
+
+export const metadata: Metadata = { alternates: { canonical: "/" } };
 import ObjectsMap from "./components/ObjectsMap";
 import ScrollStory, { defaultStoryFrames } from "./components/ScrollStory";
 import { LeadButton, ProjectForm, UiIcon } from "./components/SiteShell";
