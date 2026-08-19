@@ -37,8 +37,12 @@ export type CmsService = {
   title: string;
   short: string;
   image: string;
+  image2: string;
   lead: string;
   bullets: string[];
+  body: string[];
+  seoTitle: string;
+  seoDescription: string;
   published: boolean;
   order: number;
 };
@@ -169,8 +173,12 @@ export async function readServices(): Promise<CmsService[]> {
       ({
         short: "",
         image: "",
+        image2: "",
         lead: "",
         bullets: [],
+        body: [],
+        seoTitle: "",
+        seoDescription: "",
         ...service,
       }) as unknown as CmsService,
   );

@@ -726,7 +726,11 @@ function ServiceFields({
         <Field label="Порядок" value={number(data.order)} onChange={(v) => set("order", Number(v))} type="number" />
         <Field label="Краткое описание для карточки" value={text(data.short)} onChange={(v) => set("short", v)} multiline />
         <Field label="Вводный текст страницы услуги" value={text(data.lead)} onChange={(v) => set("lead", v)} multiline />
+        <ImageUpload label="Дополнительное изображение страницы" value={text(data.image2)} slug={slug} onChange={(value) => set("image2", value)} />
         <LinesField label="Что входит в услугу" value={strings(data.bullets)} onChange={(v) => set("bullets", v)} />
+        <LinesField label="Подробный текст услуги (один абзац — одна строка)" value={strings(data.body)} onChange={(v) => set("body", v)} />
+        <Field label="SEO-заголовок (Title)" value={text(data.seoTitle)} onChange={(v) => set("seoTitle", v)} />
+        <Field label="SEO-описание (Description)" value={text(data.seoDescription)} onChange={(v) => set("seoDescription", v)} multiline />
       </div>
       <Toggle label="Показывать на сайте" value={checked(data.published)} onChange={(v) => set("published", v)} />
       <div className="admin-upload-box">

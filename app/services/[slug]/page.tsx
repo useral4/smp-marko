@@ -13,8 +13,9 @@ export async function generateMetadata({
   const { slug } = await params;
   const service = (await readServices()).find((item) => item.slug === slug);
   return {
-    title: service ? `${service.title} — СМП МАРКО` : "Услуга — СМП МАРКО",
-    description: service?.short,
+    title: service ? service.seoTitle || `${service.title} — СМП МАРКО` : "Услуга — СМП МАРКО",
+    description: service?.seoDescription || service?.short,
+    alternates: service ? { canonical: `/services/${service.slug}` } : undefined,
   };
 }
 
@@ -71,6 +72,7 @@ export default async function ServicePage({
           </ol>
         </div>
       </section>
+      {service.body.length > 0 && <section className="section service-seo-content"><div className="container"><div className="section-index">Подробнее об услуге</div><h2>{service.title}: порядок работ и результат</h2>{service.image2 && <div className="service-seo-image"><Image src={service.image2} alt={`${service.title} — пример конструкции`} fill sizes="(max-width:900px) 100vw,1180px"/></div>}<div className="service-seo-columns">{service.body.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}</div></div></section>}
       <section className="section detail-next">
         <div className="container">
           <div>
