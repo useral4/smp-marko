@@ -86,7 +86,7 @@ export type CmsArticle = {
   slug: string;
   title: string;
   tag: string;
-  image: string;
+  image?: string;
   excerpt: string;
   lead: string;
   sourceHref: string;
