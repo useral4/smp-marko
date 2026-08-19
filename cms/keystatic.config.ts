@@ -137,6 +137,11 @@ export default config({
         published,
         order: sortOrder,
         tag: text("Рубрика"),
+        image: fields.image({
+          label: "Обложка статьи",
+          directory: `${imageDirectory}/articles`,
+          publicPath: "/uploads/articles/",
+        }),
         excerpt: multiline("Анонс", "Показывается в карточке статьи."),
         lead: multiline("Вводный текст"),
         sourceHref: optionalText("Ссылка на источник"),

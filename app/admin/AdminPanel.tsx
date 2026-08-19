@@ -112,6 +112,7 @@ const emptyData: Record<SectionKey, ContentData> = {
     published: true,
     order: 100,
     tag: "",
+    image: "",
     excerpt: "",
     lead: "",
     sourceHref: "",
@@ -891,10 +892,27 @@ function ObjectFields({
 function ArticleFields({
   data,
   set,
+  slug,
 }: {
   data: ContentData;
   set: (key: string, value: unknown) => void;
+  slug: string;
 }) {
+  const [uploading, setUploading] = useState(false);
+  const upload = async (file: File) => {
+    if (!slug) throw new Error("Сначала укажите адрес страницы");
+    setUploading(true);
+    try {
+      const form = new FormData();
+      form.set("type", "articles");
+      form.set("slug", slug);
+      form.set("file", file);
+      const result = await jsonRequest<{ path: string }>("/api/admin/upload", { method: "POST", body: form });
+      set("image", result.path);
+    } finally {
+      setUploading(false);
+    }
+  };
   const articleSections = Array.isArray(data.sections)
     ? (data.sections as Section[])
     : [];
@@ -915,6 +933,13 @@ function ArticleFields({
         <Field label="Порядок" value={number(data.order)} onChange={(v) => set("order", Number(v))} type="number" />
         <Field label="Анонс" value={text(data.excerpt)} onChange={(v) => set("excerpt", v)} multiline />
         <Field label="Вводный текст" value={text(data.lead)} onChange={(v) => set("lead", v)} multiline />
+      </div>
+      <div className="admin-upload-box">
+        <div><b>Обложка статьи</b><span>{text(data.image) || "Изображение не выбрано"}</span></div>
+        <label className="admin-secondary-button">
+          {uploading ? "Загрузка…" : "Загрузить обложку"}
+          <input hidden type="file" accept=".jpg,.jpeg,.png,.webp" disabled={uploading} onChange={(event) => { const file=event.target.files?.[0]; if(file) void upload(file); }} />
+        </label>
       </div>
       <Toggle label="Показывать на сайте" value={checked(data.published)} onChange={(v) => set("published", v)} />
       <div className="admin-subhead">
@@ -1374,7 +1399,7 @@ export default function AdminPanel() {
             {section === "pages" && <PageFields data={selected.data} set={setData} slug={selected.slug} />}
             {section === "services" && <ServiceFields data={selected.data} set={setData} slug={selected.slug || makeSlug(text(selected.data.title))} />}
             {section === "objects" && <ObjectFields data={selected.data} set={setData} slug={selected.slug || makeSlug(text(selected.data.title))} />}
-            {section === "articles" && <ArticleFields data={selected.data} set={setData} />}
+            {section === "articles" && <ArticleFields data={selected.data} set={setData} slug={selected.slug || makeSlug(text(selected.data.title))} />}
             {section === "news" && <NewsFields data={selected.data} set={setData} />}
             {section === "documents" && <DocumentFields data={selected.data} set={setData} />}
             {section === "contacts" && <SiteFields data={selected.data} set={setData} contactsOnly />}

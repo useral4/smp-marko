@@ -219,8 +219,8 @@ export async function saveUpload(input: {
   if (hostedWithoutStorage) {
     throw new Error("Загрузка фотографий ещё подключается.");
   }
-  if (!["objects", "services", "pages"].includes(input.type)) {
-    throw new Error("Загрузка файлов разрешена только для объектов, услуг и страниц");
+  if (!["objects", "services", "pages", "articles"].includes(input.type)) {
+    throw new Error("Загрузка файлов разрешена только для объектов, услуг, страниц и статей");
   }
   const slug = safeSlug(input.slug);
   const extension = path.extname(input.name).toLowerCase();
