@@ -4,7 +4,7 @@ import ObjectsMap from "../components/ObjectsMap";
 import { LeadButton, SocialLinks, UiIcon } from "../components/SiteShell";
 import { pageText, readPage, readProjects, readSiteContent } from "../../lib/runtime-content";
 
-export const metadata:Metadata={title:"Контакты СМП МАРКО",description:"Телефоны Москвы и Санкт-Петербурга, почта, мессенджеры и карты СМП МАРКО."};
+export const metadata:Metadata={title:"Контакты СМП МАРКО",description:"Телефоны Москвы и Санкт-Петербурга, почта, мессенджеры и карты СМП МАРКО.",alternates:{canonical:"/contacts"}};
 
 export default async function ContactsPage(){
   const [site,projects,page]=await Promise.all([readSiteContent(),readProjects(),readPage("contacts")]);

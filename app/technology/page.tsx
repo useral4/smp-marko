@@ -13,6 +13,7 @@ export const metadata: Metadata = {
   title: "Технология перекрытий МАРКО",
   description:
     "Устройство, преимущества и проектные материалы сборно-монолитной системы МАРКО.",
+  alternates: { canonical: "/technology" },
 };
 
 const montageImages = [

@@ -12,6 +12,7 @@ export const metadata: Metadata = {
   title: "Проектировщикам и конструкторам — СМП МАРКО",
   description:
     "BIM-модели, сертификаты, протоколы испытаний, технические материалы и инструкция по монтажу перекрытий МАРКО.",
+  alternates: { canonical: "/designers" },
 };
 
 export default async function DesignersPage() {

@@ -8,6 +8,7 @@ import { readProjects } from "../../lib/runtime-content";
 export const metadata: Metadata = {
   title: "Объекты СМП МАРКО",
   description: "Карта и карточки реализованных объектов со сборно-монолитными перекрытиями МАРКО.",
+  alternates: { canonical: "/objects" },
 };
 
 export default async function ObjectsPage() {
