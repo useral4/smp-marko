@@ -4,6 +4,7 @@ node_modules/
 out/
 dist/
 work/
+server-recovery/
 outputs/
 *.log
 *.tsbuildinfo
