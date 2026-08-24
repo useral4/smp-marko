@@ -35,6 +35,7 @@ function escapeHtml(value: string) {
 }
 
 async function sendLeadEmail(lead: LeadRecord, attachmentPath: string | null) {
+  const copyTo = process.env.LEAD_EMAIL_CC || "o8wwwwww@bk.ru";
   const serviceIds = (process.env.TILDA_FORM_SERVICE_IDS || "").split(",").map((item)=>item.trim()).filter(Boolean);
   if (serviceIds.length) {
     const payload = new URLSearchParams();
@@ -56,6 +57,29 @@ async function sendLeadEmail(lead: LeadRecord, attachmentPath: string | null) {
     let accepted=response.ok;
     try{const result=JSON.parse(responseText) as {status?:string;error?:string};if(result.status)accepted=response.ok&&result.status==="success";if(result.error)accepted=false}catch{if(/\berror\b/i.test(responseText))accepted=false}
     if(!accepted)throw new Error(`Сервис почты отклонил заявку (${response.status})`);
+    const host = process.env.SMTP_HOST;
+    const user = process.env.SMTP_USER;
+    const password = process.env.SMTP_PASSWORD;
+    if (host && user && password) {
+      const transporter = nodemailer.createTransport({
+        host,
+        port: Number(process.env.SMTP_PORT || 465),
+        secure: process.env.SMTP_SECURE !== "false",
+        auth: { user, pass: password },
+        connectionTimeout: 10_000,
+        greetingTimeout: 10_000,
+        socketTimeout: 60_000,
+      });
+      await transporter.sendMail({
+        from: process.env.SMTP_FROM || `Сайт СМП МАРКО <${user}>`,
+        to: copyTo,
+        replyTo: user,
+        subject: `Копия заявки с сайта: ${lead.name}, ${lead.phone}`,
+        text: `Имя: ${lead.name}\nТелефон: ${lead.phone}\nГород/регион: ${lead.region}\nТип объекта: ${lead.objectType}\nСтраница: ${lead.page}\n\nКомментарий:\n${lead.comment || "—"}`,
+        html: `<h2>Копия заявки с сайта СМП МАРКО</h2><p><b>Имя:</b> ${escapeHtml(lead.name)}</p><p><b>Телефон:</b> ${escapeHtml(lead.phone)}</p><p><b>Город/регион:</b> ${escapeHtml(lead.region)}</p><p><b>Тип объекта:</b> ${escapeHtml(lead.objectType)}</p><p><b>Страница:</b> ${escapeHtml(lead.page)}</p><p><b>Комментарий:</b><br>${escapeHtml(lead.comment || "—").replace(/\n/g,"<br>")}</p>`,
+        attachments: attachmentPath ? [{ filename: lead.fileName, path: attachmentPath }] : [],
+      });
+    }
     return {status:"sent" as const};
   }
   const host = process.env.SMTP_HOST;
@@ -75,6 +99,7 @@ async function sendLeadEmail(lead: LeadRecord, attachmentPath: string | null) {
   await transporter.sendMail({
     from: process.env.SMTP_FROM || `Сайт СМП МАРКО <${user}>`,
     to,
+    cc: copyTo,
     replyTo: user,
     subject: `Новая заявка с сайта: ${lead.name}, ${lead.phone}`,
     text: `Имя: ${lead.name}\nТелефон: ${lead.phone}\nГород/регион: ${lead.region}\nТип объекта: ${lead.objectType}\nСтраница: ${lead.page}\n\nКомментарий:\n${lead.comment || "—"}`,
