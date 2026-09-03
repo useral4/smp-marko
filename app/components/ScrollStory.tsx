@@ -68,5 +68,21 @@ export default function ScrollStory({
         <div className="story-number">{String(active + 1).padStart(2,"0")}</div>
       </div>
     </div></div>
+    <div className="container story-mobile">
+      <h2>{title}</h2>
+      <div className="story-mobile-list">
+        {frames.map((frame,index)=><article className="story-mobile-card" key={`${frame.title}-mobile-${index}`}>
+          <div className="story-mobile-copy">
+            <small>{String(index + 1).padStart(2,"0")} / {String(frames.length).padStart(2,"0")}</small>
+            <h3>{frame.title}</h3>
+            <p>{frame.text}</p>
+          </div>
+          <div className="story-mobile-image">
+            <Image src={frame.image} alt={frame.title} fill sizes="(max-width: 600px) 92vw, 1px"/>
+            <span>{String(index + 1).padStart(2,"0")}</span>
+          </div>
+        </article>)}
+      </div>
+    </div>
   </section>;
 }
