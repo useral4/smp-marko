@@ -97,7 +97,7 @@
 .map-status-failed span{font-size:13px}
 .map-status-failed a{display:inline-flex;justify-self:center;margin-top:8px;padding:12px 20px;border-radius:999px;background:var(--blue);color:#fff;font-weight:700}
 @media(max-width:600px){
-  .scroll-story{height:auto;padding:72px 0}
+  .scroll-story{height:auto;padding:50px 0}
   .story-sticky{display:none}
   .story-mobile{display:block}
   .story-mobile>h2{font-size:34px;line-height:1.08;margin:0 0 26px;letter-spacing:-.04em;color:var(--story-text,#fff)}
@@ -110,4 +110,14 @@
   .story-mobile-image img{object-fit:contain;padding:18px}
   .story-mobile-image span{position:absolute;right:10px;bottom:-8px;color:rgba(8,126,155,.13);font-size:72px;font-weight:700;line-height:1}
   .map-page-section .map-frame,.objects-map-section .map-frame,.map-frame-full{height:420px}
+}
+
+.comparison-scroll-hint{display:none}
+@media(max-width:600px){
+  .page-managed .section{padding-top:min(var(--page-section-spacing),58px);padding-bottom:min(var(--page-section-spacing),58px)}
+  .page-managed .section-head{margin-bottom:30px}
+  .page-managed .section-index{margin-bottom:12px}
+  .comparison-scroll-hint{display:flex;align-items:center;justify-content:center;gap:9px;margin:-4px 0 12px;padding:9px 12px;border-radius:9px;background:#edf5f6;color:#536e77;font-size:11px;font-weight:600}
+  .comparison-scroll-hint span{color:var(--blue);font-size:16px}
+  .comparison-wrap{position:relative;box-shadow:inset -20px 0 22px -24px rgba(17,35,44,.8)}
 }
