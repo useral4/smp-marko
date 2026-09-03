@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /api/
+Disallow: /thanks
+
+Host: smp-marko.ru
+Sitemap: https://smp-marko.ru/sitemap.xml

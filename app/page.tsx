@@ -2,7 +2,24 @@ import Image from "next/image";
 import type { Metadata } from "next";
 import Link from "next/link";
 
-export const metadata: Metadata = { alternates: { canonical: "/" } };
+export const metadata: Metadata = {
+  alternates: { canonical: "/" },
+  openGraph: {
+    type: "website",
+    locale: "ru_RU",
+    siteName: "СМП МАРКО",
+    url: "https://smp-marko.ru/",
+    title: "СМП МАРКО — сборно-монолитные перекрытия",
+    description: "Проектирование, производство и монтаж сборно-монолитных перекрытий МАРКО.",
+    images: [{ url: "/og.png", width: 1200, height: 630, alt: "Сборно-монолитные перекрытия МАРКО" }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "СМП МАРКО — сборно-монолитные перекрытия",
+    description: "Проектирование, производство и монтаж сборно-монолитных перекрытий МАРКО.",
+    images: ["/og.png"],
+  },
+};
 import ObjectsMap from "./components/ObjectsMap";
 import ScrollStory, { defaultStoryFrames } from "./components/ScrollStory";
 import { LeadButton, ProjectForm, UiIcon } from "./components/SiteShell";
