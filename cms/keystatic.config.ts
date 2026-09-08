@@ -57,6 +57,15 @@ const articleSection = fields.object(
     title: text("Подзаголовок"),
     paragraphs: listOfText("Абзацы"),
     bullets: listOfText("Пункты списка"),
+    image: fields.image({
+      label: "Изображение раздела",
+      directory: `${imageDirectory}/articles`,
+      publicPath: "/uploads/articles/",
+    }),
+    imageAlt: optionalText(
+      "Описание изображения",
+      "Кратко опишите, что изображено — это важно для доступности и поиска.",
+    ),
   },
   { label: "Раздел статьи" },
 );

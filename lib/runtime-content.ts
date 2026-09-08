@@ -101,6 +101,8 @@ export async function readArticles(): Promise<CmsArticle[]> {
                 bullets: Array.isArray(value.bullets)
                   ? value.bullets.map(String)
                   : [],
+                image: String(value.image || ""),
+                imageAlt: String(value.imageAlt || ""),
               };
             })
           : [],

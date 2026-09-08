@@ -7,6 +7,8 @@ type Section = {
   title: string;
   paragraphs: string[];
   bullets: string[];
+  image?: string;
+  imageAlt?: string;
 };
 type Phone = { city: string; display: string; href: string };
 type Social = { name: string; href: string; icon: string };
@@ -899,6 +901,7 @@ function ArticleFields({
   slug: string;
 }) {
   const [uploading, setUploading] = useState(false);
+  const [uploadingSection, setUploadingSection] = useState<number | null>(null);
   const upload = async (file: File) => {
     if (!slug) throw new Error("Сначала укажите адрес страницы");
     setUploading(true);
@@ -923,6 +926,20 @@ function ArticleFields({
         itemIndex === index ? { ...section, ...patch } : section,
       ),
     );
+  };
+  const uploadSectionImage = async (file: File, index: number) => {
+    if (!slug) throw new Error("Сначала укажите адрес страницы");
+    setUploadingSection(index);
+    try {
+      const form = new FormData();
+      form.set("type", "articles");
+      form.set("slug", slug);
+      form.set("file", file);
+      const result = await jsonRequest<{ path: string }>("/api/admin/upload", { method: "POST", body: form });
+      updateSection(index, { image: result.path });
+    } finally {
+      setUploadingSection(null);
+    }
   };
   return (
     <>
@@ -970,6 +987,15 @@ function ArticleFields({
           <Field label="Подзаголовок" value={text(section.title)} onChange={(v) => updateSection(index, { title: v })} />
           <LinesField label="Абзацы" value={strings(section.paragraphs)} onChange={(v) => updateSection(index, { paragraphs: v })} hint="Один абзац — одна строка" />
           <LinesField label="Пункты списка" value={strings(section.bullets)} onChange={(v) => updateSection(index, { bullets: v })} />
+          <div className="admin-upload-box">
+            <div><b>Изображение раздела</b><span>{text(section.image) || "Изображение не выбрано"}</span></div>
+            <label className="admin-secondary-button">
+              {uploadingSection === index ? "Загрузка…" : "Загрузить изображение"}
+              <input hidden type="file" accept=".jpg,.jpeg,.png,.webp" disabled={uploadingSection !== null} onChange={(event) => { const file=event.target.files?.[0]; if(file) void uploadSectionImage(file,index); }} />
+            </label>
+          </div>
+          {section.image && <button type="button" className="admin-link-button" onClick={() => updateSection(index, { image: "", imageAlt: "" })}>Удалить изображение</button>}
+          <Field label="Описание изображения" value={text(section.imageAlt)} onChange={(v) => updateSection(index, { imageAlt: v })} hint="Для доступности и поиска" />
         </div>
       ))}
     </>

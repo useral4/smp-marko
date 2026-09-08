@@ -53,6 +53,9 @@ const articles = rawArticles.map((article) => ({
     title: section.title ?? "",
     paragraphs: section.paragraphs ?? [],
     bullets: section.bullets ?? [],
+    ...(section.image
+      ? { image: section.image, imageAlt: section.imageAlt ?? "" }
+      : {}),
   })),
 }));
 const newsItems = rawNewsItems.map((item) => ({
@@ -80,6 +83,8 @@ export type CmsArticleSection = {
   title: string;
   paragraphs: string[];
   bullets: string[];
+  image?: string;
+  imageAlt?: string;
 };
 
 export type CmsArticle = {
