@@ -1,5 +1,12 @@
 import { promises as fs } from "node:fs";
 import path from "node:path";
+import {
+  contentRoot,
+  ensureContentRoot,
+  ensureUploadRoot,
+  uploadRoot,
+  usesPersistentServerStorage,
+} from "./content-paths";
 
 export const contentTypes = [
   "objects",
@@ -15,8 +22,10 @@ export type ContentType = (typeof contentTypes)[number];
 const repo = process.env.GITHUB_CONTENT_REPO || "useral4/smp-marko";
 const branch = process.env.GITHUB_CONTENT_BRANCH || "main";
 const token = process.env.GITHUB_CONTENT_TOKEN;
-const hostedWithoutStorage = process.env.RENDER === "true" && !token;
-const localStorageEnabled = process.env.RENDER !== "true";
+const githubStorageEnabled =
+  !usesPersistentServerStorage && process.env.RENDER === "true";
+const hostedWithoutStorage = githubStorageEnabled && !token;
+const localStorageEnabled = !githubStorageEnabled;
 const apiBase = `https://api.github.com/repos/${repo}`;
 
 function assertType(value: string): asserts value is ContentType {
@@ -106,7 +115,7 @@ async function deleteGitHubFile(pathname: string, message: string) {
 export async function listContent(rawType: string) {
   assertType(rawType);
   const type = rawType;
-  if (!localStorageEnabled && token) {
+  if (githubStorageEnabled && token) {
     const directory = `cms/content/${type}`;
     const response = await githubRequest(
       `${apiBase}/contents/${directory}?ref=${encodeURIComponent(branch)}`,
@@ -135,7 +144,8 @@ export async function listContent(rawType: string) {
     );
   }
 
-  const directory = path.join(process.cwd(), "cms", "content", type);
+  await ensureContentRoot();
+  const directory = path.join(contentRoot, type);
   const names = (await fs.readdir(directory)).filter((name) =>
     name.endsWith(".json"),
   );
@@ -168,7 +178,7 @@ export async function saveContent(input: {
   const contents = `${JSON.stringify(input.data, null, 2)}\n`;
   const target = relativeFile(type, slug);
 
-  if (token) {
+  if (githubStorageEnabled && token) {
     await putGitHubFile(
       target,
       new TextEncoder().encode(contents),
@@ -182,11 +192,12 @@ export async function saveContent(input: {
     }
   }
   if (localStorageEnabled) {
-    const targetPath = path.join(process.cwd(), target);
+    await ensureContentRoot();
+    const targetPath = path.join(contentRoot, type, `${slug}.json`);
     await fs.mkdir(path.dirname(targetPath), { recursive: true });
     await fs.writeFile(targetPath, contents, "utf8");
     if (previousSlug !== slug) {
-      await fs.rm(path.join(process.cwd(), relativeFile(type, previousSlug)), {
+      await fs.rm(path.join(contentRoot, type, `${previousSlug}.json`), {
         force: true,
       });
     }
@@ -202,11 +213,12 @@ export async function deleteContent(rawType: string, rawSlug: string) {
   if (rawType === "site") throw new Error("Настройки сайта нельзя удалить");
   const slug = safeSlug(rawSlug);
   const pathname = relativeFile(rawType, slug);
-  if (token) {
+  if (githubStorageEnabled && token) {
     await deleteGitHubFile(pathname, `Удаление: ${rawType}/${slug}`);
   }
   if (localStorageEnabled) {
-    await fs.rm(path.join(process.cwd(), pathname), { force: true });
+    await ensureContentRoot();
+    await fs.rm(path.join(contentRoot, rawType, `${slug}.json`), { force: true });
   }
 }
 
@@ -238,13 +250,17 @@ export async function saveUpload(input: {
     .slice(0, 40);
   const filename = `${Date.now()}-${base || "photo"}${extension}`;
   const pathname = `public/uploads/${input.type}/${slug}/${filename}`;
-  if (token) {
+  if (githubStorageEnabled && token) {
     await putGitHubFile(pathname, input.bytes, `Фото объекта: ${slug}`);
   }
   if (localStorageEnabled) {
-    const target = path.join(process.cwd(), pathname);
+    await ensureUploadRoot();
+    const target = path.join(uploadRoot, input.type, slug, filename);
     await fs.mkdir(path.dirname(target), { recursive: true });
     await fs.writeFile(target, input.bytes);
+    if (usesPersistentServerStorage) {
+      return `/media/${input.type}/${slug}/${filename}`;
+    }
   }
   return `/uploads/${input.type}/${slug}/${filename}`;
 }

@@ -2,6 +2,7 @@ import "server-only";
 
 import { promises as fs } from "node:fs";
 import path from "node:path";
+import { contentRoot, ensureContentRoot } from "./content-paths";
 import type {
   CmsArticle,
   CmsNewsItem,
@@ -57,9 +58,8 @@ export type CmsDocument = {
   order: number;
 };
 
-const contentRoot = path.join(process.cwd(), "cms", "content");
-
 async function readCollection(name: string) {
+  await ensureContentRoot();
   const directory = path.join(contentRoot, name);
   const files = (await fs.readdir(directory)).filter((file) =>
     file.endsWith(".json"),
@@ -201,6 +201,7 @@ export async function readDocuments(): Promise<CmsDocument[]> {
 
 export async function readSiteContent(): Promise<CmsSiteContent> {
   try {
+    await ensureContentRoot();
     const site = JSON.parse(
       await fs.readFile(path.join(contentRoot, "site", "index.json"), "utf8"),
     ) as JsonRecord;
