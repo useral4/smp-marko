@@ -37,7 +37,9 @@ function escapeHtml(value: string) {
 async function sendLeadEmail(lead: LeadRecord, attachmentPath: string | null) {
   const copyTo = process.env.LEAD_EMAIL_CC || "o8wwwwww@bk.ru";
   const serviceIds = (process.env.TILDA_FORM_SERVICE_IDS || "").split(",").map((item)=>item.trim()).filter(Boolean);
-  if (serviceIds.length) {
+  // Prefer the site's SMTP account: Tilda only acknowledges a request and does
+  // not confirm delivery to the recipients configured for this site.
+  if (serviceIds.length && !(process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASSWORD)) {
     const payload = new URLSearchParams();
     for (const serviceId of serviceIds) payload.append("formservices[]",serviceId);
     payload.set("Name",lead.name);
@@ -52,34 +54,11 @@ async function sendLeadEmail(lead: LeadRecord, attachmentPath: string | null) {
     payload.set("tildaspec-pageid",process.env.TILDA_PAGE_ID||"");
     payload.set("tildaspec-formskey",process.env.TILDA_FORMS_KEY||"");
     payload.set("form-spec-comments","Its good");
-    const response=await fetch("https://forms.tildacdn.com/procces/",{method:"POST",headers:{"Content-Type":"application/x-www-form-urlencoded;charset=UTF-8",Origin:"https://smp-marko.com",Referer:"https://smp-marko.com/"},body:payload.toString(),cache:"no-store"});
+    const response=await fetch("https://forms.tildacdn.com/procces/",{method:"POST",headers:{"Content-Type":"application/x-www-form-urlencoded;charset=UTF-8",Origin:"https://smp-marko.com",Referer:"https://smp-marko.com/"},body:payload.toString(),cache:"no-store",signal:AbortSignal.timeout(20_000)});
     const responseText=await response.text();
     let accepted=response.ok;
     try{const result=JSON.parse(responseText) as {status?:string;error?:string};if(result.status)accepted=response.ok&&result.status==="success";if(result.error)accepted=false}catch{if(/\berror\b/i.test(responseText))accepted=false}
     if(!accepted)throw new Error(`Сервис почты отклонил заявку (${response.status})`);
-    const host = process.env.SMTP_HOST;
-    const user = process.env.SMTP_USER;
-    const password = process.env.SMTP_PASSWORD;
-    if (host && user && password) {
-      const transporter = nodemailer.createTransport({
-        host,
-        port: Number(process.env.SMTP_PORT || 465),
-        secure: process.env.SMTP_SECURE !== "false",
-        auth: { user, pass: password },
-        connectionTimeout: 10_000,
-        greetingTimeout: 10_000,
-        socketTimeout: 60_000,
-      });
-      await transporter.sendMail({
-        from: process.env.SMTP_FROM || `Сайт СМП МАРКО <${user}>`,
-        to: copyTo,
-        replyTo: user,
-        subject: `Копия заявки с сайта: ${lead.name}, ${lead.phone}`,
-        text: `Имя: ${lead.name}\nТелефон: ${lead.phone}\nГород/регион: ${lead.region}\nТип объекта: ${lead.objectType}\nСтраница: ${lead.page}\n\nКомментарий:\n${lead.comment || "—"}`,
-        html: `<h2>Копия заявки с сайта СМП МАРКО</h2><p><b>Имя:</b> ${escapeHtml(lead.name)}</p><p><b>Телефон:</b> ${escapeHtml(lead.phone)}</p><p><b>Город/регион:</b> ${escapeHtml(lead.region)}</p><p><b>Тип объекта:</b> ${escapeHtml(lead.objectType)}</p><p><b>Страница:</b> ${escapeHtml(lead.page)}</p><p><b>Комментарий:</b><br>${escapeHtml(lead.comment || "—").replace(/\n/g,"<br>")}</p>`,
-        attachments: attachmentPath ? [{ filename: lead.fileName, path: attachmentPath }] : [],
-      });
-    }
     return {status:"sent" as const};
   }
   const host = process.env.SMTP_HOST;
@@ -93,7 +72,7 @@ async function sendLeadEmail(lead: LeadRecord, attachmentPath: string | null) {
     auth: { user, pass: password },
     connectionTimeout: 10_000,
     greetingTimeout: 10_000,
-    socketTimeout: 60_000,
+    socketTimeout: 30_000,
   });
   const to = process.env.LEAD_EMAIL_TO || "info@kolumb.ru";
   await transporter.sendMail({
@@ -116,7 +95,6 @@ export async function createLead(form: FormData, page: string) {
   const objectType = clean(form.get("objectType"), 160);
   const comment = clean(form.get("comment"), 4000);
   if (!name || !phone || !region || !objectType) throw new Error("Заполните обязательные поля");
-  if (clean(form.get("companyWebsite"))) throw new Error("Заявка отклонена");
 
   const id = `${Date.now()}-${crypto.randomUUID().slice(0,8)}`;
   const directory = path.join(leadRoot, id);

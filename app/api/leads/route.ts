@@ -12,6 +12,12 @@ export async function POST(request: Request) {
     attempts.set(ip,{count:current&&current.reset>now?current.count+1:1,reset:now+60*60*1000});
     const form = await request.formData();
     const lead = await createLead(form, request.headers.get("referer") || "Сайт");
+    if (lead.emailStatus !== "sent") {
+      return NextResponse.json(
+        { error: "Не удалось доставить заявку на почту. Позвоните нам или попробуйте позже.", id: lead.id },
+        { status: 503 },
+      );
+    }
     return NextResponse.json({ok:true,id:lead.id});
   } catch (error) {
     return NextResponse.json({error:error instanceof Error?error.message:"Не удалось отправить заявку"},{status:400});

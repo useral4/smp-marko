@@ -95,7 +95,6 @@ export function ProjectForm({ className = "", onSuccess }: { className?: string;
       <label><span>Тип объекта</span><select name="objectType" required defaultValue=""><option value="" disabled>Выберите вариант</option><option>Частный дом</option><option>Многоквартирный дом</option><option>Коммерческий объект</option><option>Производственный объект</option><option>Реконструкция / капремонт</option><option>Другое</option></select></label>
     </div>
     <label><span>Комментарий</span><textarea name="comment" rows={3} placeholder="Площадь, пролёты, материал стен и что требуется рассчитать"/></label>
-    <label className="form-honeypot" aria-hidden="true"><span>Сайт компании</span><input name="companyWebsite" tabIndex={-1} autoComplete="off"/></label>
     <label className="file-field"><span><UiIcon name="upload"/> План или эскиз</span><input name="projectFile" type="file" accept=".pdf,.dwg,.jpg,.jpeg,.png,.webp"/><small>PDF, DWG, JPG, PNG или WEBP, до 15 МБ. Файл отправится вместе с заявкой.</small></label>
     <label className="checkbox"><input type="checkbox" required/><i><UiIcon name="check" size={14}/></i><span>Согласен на обработку персональных данных по <Link href="/privacy">политике конфиденциальности</Link></span></label>
     <button className="button form-submit" type="submit" disabled={submitting}>{submitting?"Отправляем…":"Отправить заявку"} <UiIcon name="arrow"/></button>
