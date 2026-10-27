@@ -128,6 +128,9 @@ export async function readProjects(): Promise<CmsProject[]> {
   return entries.map(
     (project) =>
       ({
+        task: "",
+        workDescription: "",
+        result: "",
         area: "",
         system: "",
         year: "",

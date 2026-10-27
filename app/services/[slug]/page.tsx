@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import Image from "next/image";
+import Image from "../../components/ResponsiveImage";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { LeadButton, UiIcon } from "../../components/SiteShell";

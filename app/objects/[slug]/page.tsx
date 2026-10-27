@@ -36,6 +36,11 @@ export default async function ObjectPage({
     ["Год", project.year],
     ["Место", project.location],
   ].filter((fact): fact is [string, string] => Boolean(fact[1]));
+  const caseSections = [
+    ["Задача", project.task],
+    ["Ход работ и решение", project.workDescription],
+    ["Результат", project.result],
+  ].filter((section): section is [string, string] => Boolean(section[1]?.trim()));
 
   return <main id="top">
     <section className="object-detail-hero">
@@ -61,6 +66,15 @@ export default async function ObjectPage({
         {facts.length > 0 && <dl className="object-detail-facts">
           {facts.map(([label, value]) => <div key={label}><dt>{label}</dt><dd>{value}</dd></div>)}
         </dl>}
+
+        {caseSections.length > 0 && <div className="publication-body">
+          {caseSections.map(([heading, copy]) => <section key={heading}>
+            <h2>{heading}</h2>
+            {copy.split(/\n\s*\n/).filter(Boolean).map((paragraph, index) =>
+              <p key={index}>{paragraph}</p>,
+            )}
+          </section>)}
+        </div>}
 
         {project.gallery.length > 0 && <div className="object-detail-gallery">
           {project.gallery.map((image, index) => <div key={image}>

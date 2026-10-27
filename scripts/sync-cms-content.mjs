@@ -65,6 +65,9 @@ const newsItems = rawNewsItems.map((item) => ({
   ...item,
 }));
 const projects = rawProjects.map((project) => ({
+  task: "",
+  workDescription: "",
+  result: "",
   area: "",
   system: "",
   year: "",
@@ -116,6 +119,9 @@ export type CmsProject = {
   slug: string;
   title: string;
   description: string;
+  task: string;
+  workDescription: string;
+  result: string;
   location: string;
   category: string;
   area: string;

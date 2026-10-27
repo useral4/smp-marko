@@ -1,4 +1,4 @@
-import Image from "next/image";
+import Image from "./components/ResponsiveImage";
 import type { Metadata } from "next";
 import Link from "next/link";
 

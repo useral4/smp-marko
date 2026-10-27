@@ -14,7 +14,7 @@ export default function FloorRestorationPage() {
     <main id="top">
       <section className="publication-hero">
         <div className="container publication-heading">
-          <div className="breadcrumbs"><Link href="/">Главная</Link><span>—</span><Link href="/uslugi">Услуги</Link></div>
+          <div className="breadcrumbs"><Link href="/">Главная</Link><span>—</span><Link href="/services">Услуги</Link></div>
           <small>Реконструкция</small>
           <h1>Замена и восстановление деревянных перекрытий</h1>
           <p>Технология МАРКО позволяет заменить аварийное перекрытие в существующем здании без тяжёлой грузоподъёмной техники и адаптировать конструкцию к сложной геометрии объекта.</p>

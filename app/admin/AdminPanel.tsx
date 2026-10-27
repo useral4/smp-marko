@@ -824,6 +824,9 @@ function ObjectFields({
         <Field label="Ссылка на источник" value={text(data.source)} onChange={(v) => set("source", v)} type="url" />
         <Field label="Порядок" value={number(data.order)} onChange={(v) => set("order", Number(v))} type="number" />
         <Field label="Краткое описание" value={text(data.description)} onChange={(v) => set("description", v)} multiline />
+        <Field label="Задача объекта" value={text(data.task)} onChange={(v) => set("task", v)} multiline hint="Что требовалось выполнить. Добавляйте только подтверждённые сведения." />
+        <Field label="Ход работ и решение" value={text(data.workDescription)} onChange={(v) => set("workDescription", v)} multiline hint="Этапы и применённое конструктивное решение. Пустой раздел не выводится на сайте." />
+        <Field label="Результат" value={text(data.result)} onChange={(v) => set("result", v)} multiline hint="Подтверждённые итоги, площадь и сроки. Абзацы разделяйте пустой строкой." />
       </div>
       <div className="admin-checks">
         <Toggle label="Показывать на сайте" value={checked(data.published)} onChange={(v) => set("published", v)} />
